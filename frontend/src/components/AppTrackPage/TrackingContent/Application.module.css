@@ -1,0 +1,19 @@
+.application {
+	width: 65%;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+	margin: 1em auto;
+	padding: 0.5em;
+	border-radius: 10px;
+}
+
+.logoAndName {
+	display: flex;
+	justify-content: space-between;
+}
+
+.companyLogo {
+	width: 50px;
+	height: 50px;
+	object-fit: cover;
+	border-radius: 50%;
+}

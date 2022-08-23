@@ -1,0 +1,10 @@
+.header {
+	padding: 2em;
+	text-align: center;
+	display: flex;
+	align-items: baseline;
+}
+
+.title {
+	margin: auto;
+}
