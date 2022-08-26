@@ -1,7 +1,26 @@
-.content {
-	margin: 3em auto;
+.title {
+	margin: 0;
+}
+
+.search {
+	margin: 1em;
+	padding: 0.25em;
+	width: 40%;
+}
+
+.divider {
+	text-align: center;
+}
+
+.iconBtn {
+	color: black;
+	max-width: fit-content;
+	align-self: center;
+}
+
+.test {
 	width: 95%;
-	min-width: 1250px;
+	margin: 0 auto;
 	display: flex;
-	justify-content: space-between;
+	flex-direction: column;
 }

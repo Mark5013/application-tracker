@@ -10,27 +10,34 @@ interface App {
 }
 
 interface AppTrackDividerProps {
-	title: string;
+	filter: string;
 	apps: App[];
 }
 
 const AppTrackDivider: React.FC<AppTrackDividerProps> = (props) => {
+	// extract apps from props
+	let filteredApps = props.apps;
+
+	// if a filter is passed in, filter the apps
+	if (props.filter.trim() !== "") {
+		filteredApps = props.apps.filter((app) =>
+			app.company.toLowerCase().startsWith(props.filter.toLowerCase())
+		);
+	}
+
 	return (
-		<div>
-			<h2>{props.title}</h2>
-			<div className={styles.divider}>
-				{props.apps.map((app) => (
-					<Application
-						key={uuidv4()}
-						company={app.company}
-						position={app.position}
-						date={app.date}
-						imageUrl={
-							"https://images-na.ssl-images-amazon.com/images/G/01/gc/designs/livepreview/amazon_a_black_noto_email_v2016_us-main._CB624175556_.png"
-						}
-					/>
-				))}
-			</div>
+		<div className={styles.divider}>
+			{filteredApps.map((app) => (
+				<Application
+					key={uuidv4()}
+					company={app.company}
+					position={app.position}
+					date={app.date}
+					imageUrl={
+						"https://images-na.ssl-images-amazon.com/images/G/01/gc/designs/livepreview/amazon_a_black_noto_email_v2016_us-main._CB624175556_.png"
+					}
+				/>
+			))}
 		</div>
 	);
 };

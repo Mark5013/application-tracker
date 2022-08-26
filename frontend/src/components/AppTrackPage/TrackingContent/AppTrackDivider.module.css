@@ -1,11 +1,7 @@
 .divider {
-	width: 20%;
-	min-width: 300px;
+	width: 275px;
 	height: 600px;
 	border-radius: 20px;
 	border: 1px solid black;
-}
-
-h2 {
-	text-align: center;
+	margin: 0 auto;
 }
