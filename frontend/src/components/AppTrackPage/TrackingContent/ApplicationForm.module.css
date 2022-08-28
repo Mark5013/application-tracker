@@ -3,7 +3,7 @@
 	padding: 1em;
 	width: 30%;
 	min-width: 300px;
-	height: 300px;
+	height: auto;
 	border-radius: 10px;
 	position: absolute;
 	z-index: 51;

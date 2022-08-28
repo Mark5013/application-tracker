@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import styles from "./TrackingContent.module.css";
 import AppTrackDivider from "./AppTrackDivider";
@@ -8,19 +8,29 @@ import ApplicationForm from "./ApplicationForm";
 import { useState } from "react";
 import { Grid, Icon, IconButton } from "@mui/material";
 
-interface App {
+class App {
 	company: string;
 	position: string;
 	date: string;
+	status: string;
+	constructor(
+		company: string,
+		position: string,
+		date: string,
+		status: string
+	) {
+		this.company = company;
+		this.position = position;
+		this.date = date;
+		this.status = status;
+	}
 }
 
 const portal = document.getElementById("backdrop")! as HTMLDivElement;
 
 const TrackingContent: React.FC = () => {
 	// all applications
-	const [appliedApps, setAppliedApps] = useState<App[]>([
-		{ company: "Amazon", position: "SWE", date: "08/07/22" },
-	]);
+	const [appliedApps, setAppliedApps] = useState<App[]>([]);
 	const [inProgressApps, setInProgressApps] = useState<App[]>([]);
 	const [offerApps, setOfferApps] = useState<App[]>([]);
 	const [rejectedApps, setRejectedApps] = useState<App[]>([]);
@@ -33,11 +43,56 @@ const TrackingContent: React.FC = () => {
 
 	const [showForm, setShowForm] = useState(false);
 
+	useEffect(() => {
+		console.log("fetch apps?");
+		setAppliedApps(JSON.parse(localStorage.getItem("Applied") || "[]"));
+		setInProgressApps(
+			JSON.parse(localStorage.getItem("In-Progress") || "[]")
+		);
+		setOfferApps(JSON.parse(localStorage.getItem("Offer") || "[]"));
+		setRejectedApps(JSON.parse(localStorage.getItem("Rejected") || "[]"));
+	}, []);
+
 	const toggleForm = () => {
 		setShowForm((prev) => !prev);
 	};
 
-	const addApplication = () => {};
+	const addApplication = (
+		companyName: string,
+		position: string,
+		date: string,
+		status: string
+	) => {
+		//create app
+		const newApp = new App(companyName, position, date, status);
+		let curApps;
+		switch (status) {
+			case "Applied":
+				curApps = appliedApps;
+				curApps.push(newApp);
+				localStorage.setItem(`${status}`, JSON.stringify(curApps));
+				setAppliedApps(curApps);
+				break;
+			case "In-Progress":
+				curApps = inProgressApps;
+				curApps.push(newApp);
+				localStorage.setItem(`${status}`, JSON.stringify(curApps));
+				break;
+			case "Offer":
+				curApps = offerApps;
+				curApps.push(newApp);
+				localStorage.setItem(`${status}`, JSON.stringify(curApps));
+				break;
+			case "Rejected":
+				curApps = rejectedApps;
+				curApps.push(newApp);
+				localStorage.setItem(`${status}`, JSON.stringify(curApps));
+				break;
+			default:
+				console.log("Invalid status");
+		}
+		toggleForm();
+	};
 
 	// handles changes for applied app filter input
 	const handleAppliedFilter = (
@@ -68,7 +123,10 @@ const TrackingContent: React.FC = () => {
 				ReactDOM.createPortal(
 					<>
 						{" "}
-						<ApplicationForm toggleForm={toggleForm} />
+						<ApplicationForm
+							toggleForm={toggleForm}
+							addApplication={addApplication}
+						/>
 						<BackDrop toggleForm={toggleForm}></BackDrop>
 					</>,
 					portal
