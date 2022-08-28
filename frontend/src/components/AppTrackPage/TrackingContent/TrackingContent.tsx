@@ -37,6 +37,8 @@ const TrackingContent: React.FC = () => {
 		setShowForm((prev) => !prev);
 	};
 
+	const addApplication = () => {};
+
 	// handles changes for applied app filter input
 	const handleAppliedFilter = (
 		event: React.ChangeEvent<HTMLInputElement>
@@ -66,7 +68,7 @@ const TrackingContent: React.FC = () => {
 				ReactDOM.createPortal(
 					<>
 						{" "}
-						<ApplicationForm />
+						<ApplicationForm toggleForm={toggleForm} />
 						<BackDrop toggleForm={toggleForm}></BackDrop>
 					</>,
 					portal
