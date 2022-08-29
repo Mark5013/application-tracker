@@ -39,6 +39,7 @@ const TrackingContent: React.FC = () => {
 	const [offerApps, setOfferApps] = useState<App[]>([]);
 	const [rejectedApps, setRejectedApps] = useState<App[]>([]);
 
+	// status -> application arr mapping
 	const applicationHash: { [key: string]: App[] } = {
 		Applied: appliedApps,
 		"In-Progress": inProgressApps,
@@ -46,6 +47,7 @@ const TrackingContent: React.FC = () => {
 		Rejected: rejectedApps,
 	};
 
+	// status -> set application arr mapping
 	const setApplicationHash: { [key: string]: Function } = {
 		Applied: setAppliedApps,
 		"In-Progress": setInProgressApps,
@@ -98,6 +100,7 @@ const TrackingContent: React.FC = () => {
 		toggleForm();
 	};
 
+	// edits an application
 	const editApplication = (
 		appId: string,
 		companyName: string,
@@ -105,9 +108,11 @@ const TrackingContent: React.FC = () => {
 		date: string,
 		status: string
 	) => {
+		// get corresponding arr and set arr function
 		let curApps = applicationHash[status];
 		const setCurApps = setApplicationHash[status];
 
+		// edit app
 		let appToEdit = curApps.find((app) => app.id == appId);
 		if (appToEdit) {
 			appToEdit.company = companyName;
@@ -115,10 +120,12 @@ const TrackingContent: React.FC = () => {
 			appToEdit.date = date;
 			appToEdit.status = status;
 			localStorage.setItem(`${status}`, JSON.stringify(curApps));
+			// spread operator so react realizes something changed
 			setCurApps([...curApps]);
 		}
 	};
 
+	// deletes an app
 	const deleteApp = (appId: string, status: string) => {
 		let curApps = applicationHash[status];
 		let setCurApps = setApplicationHash[status];
