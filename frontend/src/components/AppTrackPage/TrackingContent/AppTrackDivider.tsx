@@ -14,6 +14,8 @@ interface AppTrackDividerProps {
 	filter: string;
 	apps: App[];
 	deleteApp: Function;
+	editApp: Function;
+	toggleForm: React.MouseEventHandler<Element>;
 }
 
 const AppTrackDivider: React.FC<AppTrackDividerProps> = (props) => {
@@ -38,6 +40,8 @@ const AppTrackDivider: React.FC<AppTrackDividerProps> = (props) => {
 					status={app.status}
 					id={app.id}
 					deleteApp={props.deleteApp}
+					editApp={props.editApp}
+					toggleForm={props.toggleForm}
 				/>
 			))}
 		</div>

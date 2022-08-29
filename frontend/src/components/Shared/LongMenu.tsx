@@ -8,6 +8,7 @@ interface LongMenuProps {
 	id: string;
 	status: string;
 	deleteApp: Function;
+	editApp: Function;
 }
 
 const options = ["Edit", "Delete"];
@@ -27,6 +28,7 @@ const LongMenu: React.FC<LongMenuProps> = (props) => {
 
 		if (action === "Edit") {
 			//edit task thhrough function passed through props
+			props.editApp();
 		} else if (action === "Delete") {
 			// delete this task
 			props.deleteApp(props.id, props.status);

@@ -64,7 +64,6 @@ const TrackingContent: React.FC = () => {
 
 	// load up users apps from local storage, soon to be connected to database
 	useEffect(() => {
-		console.log("fetch apps?");
 		setAppliedApps(JSON.parse(localStorage.getItem("Applied") || "[]"));
 		setInProgressApps(
 			JSON.parse(localStorage.getItem("In-Progress") || "[]")
@@ -97,6 +96,27 @@ const TrackingContent: React.FC = () => {
 
 		// close form
 		toggleForm();
+	};
+
+	const editApplication = (
+		appId: string,
+		companyName: string,
+		position: string,
+		date: string,
+		status: string
+	) => {
+		let curApps = applicationHash[status];
+		const setCurApps = setApplicationHash[status];
+
+		let appToEdit = curApps.find((app) => app.id == appId);
+		if (appToEdit) {
+			appToEdit.company = companyName;
+			appToEdit.position = position;
+			appToEdit.date = date;
+			appToEdit.status = status;
+			localStorage.setItem(`${status}`, JSON.stringify(curApps));
+			setCurApps([...curApps]);
+		}
 	};
 
 	const deleteApp = (appId: string, status: string) => {
@@ -143,6 +163,10 @@ const TrackingContent: React.FC = () => {
 						<ApplicationForm
 							toggleForm={toggleForm}
 							addApplication={addApplication}
+							companyName=""
+							position=""
+							status=""
+							dateApplied=""
 						/>
 						<BackDrop toggleForm={toggleForm}></BackDrop>
 					</>,
@@ -169,6 +193,8 @@ const TrackingContent: React.FC = () => {
 							apps={appliedApps}
 							filter={appliedFilter}
 							deleteApp={deleteApp}
+							toggleForm={toggleForm}
+							editApp={editApplication}
 						/>
 					</Grid>
 					<Grid
@@ -190,6 +216,8 @@ const TrackingContent: React.FC = () => {
 							apps={inProgressApps}
 							filter={inProgressFilter}
 							deleteApp={deleteApp}
+							toggleForm={toggleForm}
+							editApp={editApplication}
 						/>
 					</Grid>
 					<Grid
@@ -211,6 +239,8 @@ const TrackingContent: React.FC = () => {
 							apps={offerApps}
 							filter={offerFilter}
 							deleteApp={deleteApp}
+							toggleForm={toggleForm}
+							editApp={editApplication}
 						/>
 					</Grid>
 					<Grid
@@ -232,6 +262,8 @@ const TrackingContent: React.FC = () => {
 							apps={rejectedApps}
 							filter={rejectedFilter}
 							deleteApp={deleteApp}
+							toggleForm={toggleForm}
+							editApp={editApplication}
 						/>
 					</Grid>
 				</Grid>

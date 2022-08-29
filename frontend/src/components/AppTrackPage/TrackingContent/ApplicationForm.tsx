@@ -5,15 +5,21 @@ import BasicSelect from "./BasicSelect";
 import { IconButton, Icon } from "@mui/material";
 
 interface ApplicationFormProps {
-	toggleForm: MouseEventHandler;
-	addApplication: Function;
+	toggleForm: any;
+	addApplication?: Function;
+	editApplication?: Function;
+	appId?: string;
+	companyName: string;
+	position: string;
+	dateApplied: string;
+	status: string;
 }
 
 const ApplicationForm: React.FC<ApplicationFormProps> = (props) => {
-	const [companyName, setCompanyName] = useState("");
-	const [position, setPosition] = useState("");
-	const [dateApplied, setDateApplied] = useState("");
-	const [status, setStatus] = useState("");
+	const [companyName, setCompanyName] = useState(props.companyName);
+	const [position, setPosition] = useState(props.position);
+	const [dateApplied, setDateApplied] = useState(props.dateApplied);
+	const [status, setStatus] = useState(props.status);
 
 	const [companyNameError, setCompanyNameError] = useState(false);
 	const [positionError, setPositionError] = useState(false);
@@ -52,7 +58,25 @@ const ApplicationForm: React.FC<ApplicationFormProps> = (props) => {
 		}
 
 		if (validForm) {
-			props.addApplication(companyName, position, dateApplied, status);
+			if (props.addApplication) {
+				props.addApplication(
+					companyName,
+					position,
+					dateApplied,
+					status
+				);
+			}
+
+			if (props.editApplication && props.appId) {
+				props.editApplication(
+					props.appId,
+					companyName,
+					position,
+					dateApplied,
+					status
+				);
+				props.toggleForm();
+			}
 		}
 	};
 
@@ -61,21 +85,21 @@ const ApplicationForm: React.FC<ApplicationFormProps> = (props) => {
 			<Input
 				type="text"
 				label="Company name"
-				value={companyName}
+				val={companyName}
 				setValue={setCompanyName}
 			/>
 			{companyNameError && <p>Company name can't be empty</p>}
 			<Input
 				type="text"
 				label="Position"
-				value={position}
+				val={position}
 				setValue={setPosition}
 			/>
 			{positionError && <p>Position can't be empty</p>}
 			<Input
 				type="date"
 				label="Date applied"
-				value={dateApplied}
+				val={dateApplied}
 				setValue={setDateApplied}
 			/>
 			{dateAppliedError && <p>Date applied can't be empty</p>}
