@@ -7,7 +7,7 @@
 	text-align: left;
 }
 
-.logoAndName {
+.container {
 	display: flex;
 	justify-content: space-between;
 }
@@ -17,4 +17,8 @@
 	height: 50px;
 	object-fit: cover;
 	border-radius: 50%;
+}
+
+.temp {
+	margin-top: 21%;
 }

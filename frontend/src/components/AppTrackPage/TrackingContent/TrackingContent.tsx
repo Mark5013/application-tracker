@@ -7,22 +7,26 @@ import BackDrop from "../../Shared/BackDrop";
 import ApplicationForm from "./ApplicationForm";
 import { useState } from "react";
 import { Grid, Icon, IconButton } from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
 
 class App {
 	company: string;
 	position: string;
 	date: string;
 	status: string;
+	id: string;
 	constructor(
 		company: string,
 		position: string,
 		date: string,
-		status: string
+		status: string,
+		id: string
 	) {
 		this.company = company;
 		this.position = position;
 		this.date = date;
 		this.status = status;
+		this.id = id;
 	}
 }
 
@@ -35,14 +39,30 @@ const TrackingContent: React.FC = () => {
 	const [offerApps, setOfferApps] = useState<App[]>([]);
 	const [rejectedApps, setRejectedApps] = useState<App[]>([]);
 
+	const applicationHash: { [key: string]: App[] } = {
+		Applied: appliedApps,
+		"In-Progress": inProgressApps,
+		Offer: offerApps,
+		Rejected: rejectedApps,
+	};
+
+	const setApplicationHash: { [key: string]: Function } = {
+		Applied: setAppliedApps,
+		"In-Progress": setInProgressApps,
+		Offer: setOfferApps,
+		Rejected: setRejectedApps,
+	};
+
 	// filters for apps
 	const [appliedFilter, setAppliedFilter] = useState("");
 	const [inProgressFilter, setInProgressFilter] = useState("");
 	const [offerFilter, setOfferFilter] = useState("");
 	const [rejectedFilter, setRejectedFilter] = useState("");
 
+	// toggle for application form
 	const [showForm, setShowForm] = useState(false);
 
+	// load up users apps from local storage, soon to be connected to database
 	useEffect(() => {
 		console.log("fetch apps?");
 		setAppliedApps(JSON.parse(localStorage.getItem("Applied") || "[]"));
@@ -53,10 +73,13 @@ const TrackingContent: React.FC = () => {
 		setRejectedApps(JSON.parse(localStorage.getItem("Rejected") || "[]"));
 	}, []);
 
+	// toggles form
 	const toggleForm = () => {
 		setShowForm((prev) => !prev);
 	};
 
+	// creates application and adds it to proper storage in local storage
+	// soon to be connected to data base
 	const addApplication = (
 		companyName: string,
 		position: string,
@@ -64,53 +87,47 @@ const TrackingContent: React.FC = () => {
 		status: string
 	) => {
 		//create app
-		const newApp = new App(companyName, position, date, status);
-		let curApps;
-		switch (status) {
-			case "Applied":
-				curApps = appliedApps;
-				curApps.push(newApp);
-				localStorage.setItem(`${status}`, JSON.stringify(curApps));
-				setAppliedApps(curApps);
-				break;
-			case "In-Progress":
-				curApps = inProgressApps;
-				curApps.push(newApp);
-				localStorage.setItem(`${status}`, JSON.stringify(curApps));
-				break;
-			case "Offer":
-				curApps = offerApps;
-				curApps.push(newApp);
-				localStorage.setItem(`${status}`, JSON.stringify(curApps));
-				break;
-			case "Rejected":
-				curApps = rejectedApps;
-				curApps.push(newApp);
-				localStorage.setItem(`${status}`, JSON.stringify(curApps));
-				break;
-			default:
-				console.log("Invalid status");
-		}
+		const newApp = new App(companyName, position, date, status, uuidv4());
+		let curApps = applicationHash[status];
+		const setCurApps = setApplicationHash[status];
+
+		curApps.push(newApp);
+		localStorage.setItem(`${status}`, JSON.stringify(curApps));
+		setCurApps(curApps);
+
+		// close form
 		toggleForm();
 	};
 
-	// handles changes for applied app filter input
+	const deleteApp = (appId: string, status: string) => {
+		let curApps = applicationHash[status];
+		let setCurApps = setApplicationHash[status];
+
+		const filteredApps = curApps.filter((app) => app.id !== appId);
+		localStorage.setItem(`${status}`, JSON.stringify(filteredApps));
+		setCurApps(filteredApps);
+	};
+
+	// handles changes for applied app filter
 	const handleAppliedFilter = (
 		event: React.ChangeEvent<HTMLInputElement>
 	) => {
 		setAppliedFilter(event.currentTarget.value);
 	};
 
+	// handles changes for in progress app filter
 	const handleInProgressFilter = (
 		event: React.ChangeEvent<HTMLInputElement>
 	) => {
 		setInProgressFilter(event.currentTarget.value);
 	};
 
+	// handles changes for offer app filter
 	const handleOfferFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setOfferFilter(event.currentTarget.value);
 	};
 
+	// handles changes for rejected app filter
 	const handleRejectedFilter = (
 		event: React.ChangeEvent<HTMLInputElement>
 	) => {
@@ -151,6 +168,7 @@ const TrackingContent: React.FC = () => {
 						<AppTrackDivider
 							apps={appliedApps}
 							filter={appliedFilter}
+							deleteApp={deleteApp}
 						/>
 					</Grid>
 					<Grid
@@ -171,6 +189,7 @@ const TrackingContent: React.FC = () => {
 						<AppTrackDivider
 							apps={inProgressApps}
 							filter={inProgressFilter}
+							deleteApp={deleteApp}
 						/>
 					</Grid>
 					<Grid
@@ -191,6 +210,7 @@ const TrackingContent: React.FC = () => {
 						<AppTrackDivider
 							apps={offerApps}
 							filter={offerFilter}
+							deleteApp={deleteApp}
 						/>
 					</Grid>
 					<Grid
@@ -211,6 +231,7 @@ const TrackingContent: React.FC = () => {
 						<AppTrackDivider
 							apps={rejectedApps}
 							filter={rejectedFilter}
+							deleteApp={deleteApp}
 						/>
 					</Grid>
 				</Grid>

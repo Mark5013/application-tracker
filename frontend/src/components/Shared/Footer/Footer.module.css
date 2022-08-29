@@ -1,0 +1,27 @@
+.footer {
+	text-align: center;
+	padding: 3em;
+	background-color: gray;
+}
+
+.icon {
+	color: black;
+	opacity: 0.3;
+	font-size: 2.2em;
+	transform: scale(1);
+	transition: transform 250ms;
+	margin-bottom: 0.25em;
+}
+
+.icon:hover,
+.icon:focus {
+	transform: scale(1.2);
+	opacity: 0.9;
+}
+
+.icons {
+	margin: 0 auto;
+	width: 80px;
+	display: flex;
+	justify-content: space-between;
+}
