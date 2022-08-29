@@ -1,7 +1,16 @@
 .divider {
-	width: 275px;
+	padding: 0.25em;
+	width: 265px;
 	height: 600px;
 	border-radius: 20px;
-	border: 1px solid black;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	margin: 0 auto;
+	overflow-y: scroll;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.divider::-webkit-scrollbar {
+	width: 0;
+	height: 0;
 }

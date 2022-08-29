@@ -4,7 +4,7 @@ import styles from "./Input.module.css";
 interface InputProps {
 	type: string;
 	label: string;
-	value: string;
+	val: string;
 	setValue: Function;
 }
 
@@ -20,7 +20,8 @@ const Input: React.FC<InputProps> = (props) => {
 			<input
 				className={styles.input}
 				type={props.type}
-				onChange={onChangeHandler}></input>
+				onChange={onChangeHandler}
+				value={props.val}></input>
 		</div>
 	);
 };
