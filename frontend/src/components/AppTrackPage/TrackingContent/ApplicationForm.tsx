@@ -16,19 +16,23 @@ interface ApplicationFormProps {
 }
 
 const ApplicationForm: React.FC<ApplicationFormProps> = (props) => {
+	// values for inputs
 	const [companyName, setCompanyName] = useState(props.companyName);
 	const [position, setPosition] = useState(props.position);
 	const [dateApplied, setDateApplied] = useState(props.dateApplied);
 	const [status, setStatus] = useState(props.status);
 
+	// error status' for inputs
 	const [companyNameError, setCompanyNameError] = useState(false);
 	const [positionError, setPositionError] = useState(false);
 	const [dateAppliedError, setDateAppliedError] = useState(false);
 	const [statusError, setStatusError] = useState(false);
 
+	// handles submitting form for editing and adding
 	const submitFormHandler = (event: React.MouseEvent<Element>) => {
 		let validForm = true;
 		event.preventDefault();
+		// get rid of white spaces on all inputs and check they aren't empty
 		if (companyName.trim().length === 0) {
 			setCompanyNameError(true);
 			validForm = false;
@@ -57,7 +61,9 @@ const ApplicationForm: React.FC<ApplicationFormProps> = (props) => {
 			setStatusError(false);
 		}
 
+		// check form is valid
 		if (validForm) {
+			// add application is prop exists
 			if (props.addApplication) {
 				props.addApplication(
 					companyName,
@@ -67,6 +73,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = (props) => {
 				);
 			}
 
+			// edit application if props exist
 			if (props.editApplication && props.appId) {
 				props.editApplication(
 					props.appId,
