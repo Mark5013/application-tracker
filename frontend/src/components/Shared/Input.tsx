@@ -15,13 +15,14 @@ const Input: React.FC<InputProps> = (props) => {
 
 	return (
 		<div className={styles.container}>
-			<label>{props.label}:</label>
+			<label htmlFor={props.label}>{props.label}:</label>
 			<br />
 			<input
 				className={styles.input}
 				type={props.type}
 				onChange={onChangeHandler}
-				value={props.val}></input>
+				value={props.val}
+				name={props.label}></input>
 		</div>
 	);
 };
