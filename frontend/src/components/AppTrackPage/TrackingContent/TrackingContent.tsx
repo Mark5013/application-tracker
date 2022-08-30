@@ -106,20 +106,53 @@ const TrackingContent: React.FC = () => {
 		companyName: string,
 		position: string,
 		date: string,
-		status: string
+		status: string,
+		prevStatus: string
 	) => {
+		// old apps and set old apps in case status has changed
+		let oldApps;
+		let setOldApps;
+		let appToEdit;
+
 		// get corresponding arr and set arr function
 		let curApps = applicationHash[status];
 		const setCurApps = setApplicationHash[status];
 
+		// if status has changed get old apps, set old apps, and the app from the arr
+		if (prevStatus != status) {
+			oldApps = applicationHash[prevStatus];
+			setOldApps = setApplicationHash[prevStatus];
+			appToEdit = oldApps.find((app) => app.id === appId);
+		} else {
+			// if not, just use cur apps
+			appToEdit = curApps.find((app) => app.id == appId);
+		}
+
 		// edit app
-		let appToEdit = curApps.find((app) => app.id == appId);
 		if (appToEdit) {
 			appToEdit.company = companyName;
 			appToEdit.position = position;
 			appToEdit.date = date;
 			appToEdit.status = status;
+
+			// if status has changed, push into new arr
+			if (prevStatus !== status) {
+				curApps.push(appToEdit);
+			}
+			// set new arr in local storage
 			localStorage.setItem(`${status}`, JSON.stringify(curApps));
+
+			// if status has changed, filter old one, update old one in local storage, and set old one
+			if (oldApps && setOldApps) {
+				const filteredOldApps = oldApps.filter(
+					(app) => app.id !== appId
+				);
+				localStorage.setItem(
+					`${prevStatus}`,
+					JSON.stringify(filteredOldApps)
+				);
+				setOldApps(filteredOldApps);
+			}
 			// spread operator so react realizes something changed
 			setCurApps([...curApps]);
 		}

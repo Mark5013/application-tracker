@@ -45,14 +45,16 @@ const Application: React.FC<ApplicationProps> = (props) => {
 				)}
 			<div className={styles.application}>
 				<div className={styles.container}>
-					<img
-						className={styles.companyLogo}
-						src={`https://logo.clearbit.com/${props.company.replace(
-							/\s/g,
-							""
-						)}.com`}
-						alt="company photo"
-					/>
+					<div className={styles.companyLogo}>
+						<img
+							src={`https://logo.clearbit.com/${props.company.replace(
+								/\s/g,
+								""
+							)}.com`}
+							alt="company photo"
+						/>
+					</div>
+
 					<h3 className={styles.companyName}>{props.company}</h3>
 				</div>
 				<div className={styles.container}>

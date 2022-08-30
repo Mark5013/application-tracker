@@ -80,7 +80,8 @@ const ApplicationForm: React.FC<ApplicationFormProps> = (props) => {
 					companyName,
 					position,
 					dateApplied,
-					status
+					status,
+					props.status
 				);
 				props.toggleForm();
 			}
