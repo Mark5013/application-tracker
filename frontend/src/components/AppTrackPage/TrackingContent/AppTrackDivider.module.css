@@ -14,3 +14,9 @@
 	width: 0;
 	height: 0;
 }
+
+.numberOfApps {
+	font-weight: 700;
+	margin: 1em 0 0 0;
+	font-size: 1.2em;
+}
