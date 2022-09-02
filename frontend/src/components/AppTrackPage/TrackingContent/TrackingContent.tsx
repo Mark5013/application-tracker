@@ -212,7 +212,7 @@ const TrackingContent: React.FC = () => {
 					</>,
 					portal
 				)}
-			<div className={styles.test}>
+			<div className={styles.main}>
 				<Grid container rowSpacing={4} columnSpacing={1}>
 					<Grid
 						item

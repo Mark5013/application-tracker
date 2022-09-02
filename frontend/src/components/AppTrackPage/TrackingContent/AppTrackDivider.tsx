@@ -30,21 +30,24 @@ const AppTrackDivider: React.FC<AppTrackDividerProps> = (props) => {
 	}
 
 	return (
-		<div className={styles.divider}>
-			{filteredApps.map((app) => (
-				<Application
-					key={app.id}
-					company={app.company}
-					position={app.position}
-					date={app.date}
-					status={app.status}
-					id={app.id}
-					deleteApp={props.deleteApp}
-					editApp={props.editApp}
-					toggleForm={props.toggleForm}
-				/>
-			))}
-		</div>
+		<>
+			<div className={styles.divider}>
+				{filteredApps.map((app) => (
+					<Application
+						key={app.id}
+						company={app.company}
+						position={app.position}
+						date={app.date}
+						status={app.status}
+						id={app.id}
+						deleteApp={props.deleteApp}
+						editApp={props.editApp}
+						toggleForm={props.toggleForm}
+					/>
+				))}
+			</div>
+			<p className={styles.numberOfApps}>{filteredApps.length} Apps</p>
+		</>
 	);
 };
 

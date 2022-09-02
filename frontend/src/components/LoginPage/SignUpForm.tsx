@@ -79,6 +79,9 @@ const SignUpForm = (props: { switchForm: Function }) => {
 
 	return (
 		<div className={styles.container}>
+			<a className={styles.title} href="/">
+				App Tracker
+			</a>
 			<form className={styles.form}>
 				<Input
 					type="text"
@@ -86,21 +89,31 @@ const SignUpForm = (props: { switchForm: Function }) => {
 					val={firstName}
 					setValue={setFirstName}
 				/>
-				{firstError && <p>First name must not be empty</p>}
+				{firstError && (
+					<p className={styles.errorMsg}>
+						First name must not be empty
+					</p>
+				)}
 				<Input
 					type="text"
 					label="Last name"
 					val={lastName}
 					setValue={setLastName}
 				/>
-				{lastError && <p>Last name must not be empty</p>}
+				{lastError && (
+					<p className={styles.errorMsg}>
+						Last name must not be empty
+					</p>
+				)}
 				<Input
 					type="text"
 					label="Email"
 					val={email}
 					setValue={setEmail}
 				/>
-				{emailError && <p>Please enter valid email</p>}
+				{emailError && (
+					<p className={styles.errorMsg}>Please enter valid email</p>
+				)}
 				<Input
 					type="password"
 					label="Password"
@@ -108,7 +121,7 @@ const SignUpForm = (props: { switchForm: Function }) => {
 					setValue={setPassword}
 				/>
 				{passwordError && (
-					<p>
+					<p className={styles.errorMsg}>
 						Password must be at least 8 characters, contains 1
 						numeric, 1 lowercase, 1 uppercase letter, and 1 special
 						character
@@ -121,6 +134,9 @@ const SignUpForm = (props: { switchForm: Function }) => {
 						type="submit">
 						Sign Up
 					</Button>
+					<p className={styles.switchModeText}>
+						Already have an account?
+					</p>
 					<Button variant="outlined" onClick={switchMode}>
 						Login
 					</Button>
