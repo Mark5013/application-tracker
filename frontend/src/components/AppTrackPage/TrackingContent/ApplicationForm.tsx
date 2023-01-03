@@ -96,23 +96,31 @@ const ApplicationForm: React.FC<ApplicationFormProps> = (props) => {
 				val={companyName}
 				setValue={setCompanyName}
 			/>
-			{companyNameError && <p>Company name can't be empty</p>}
+			{companyNameError && (
+				<p className={styles.errorMsg}>Company name can't be empty</p>
+			)}
 			<Input
 				type="text"
 				label="Position"
 				val={position}
 				setValue={setPosition}
 			/>
-			{positionError && <p>Position can't be empty</p>}
+			{positionError && (
+				<p className={styles.errorMsg}>Position can't be empty</p>
+			)}
 			<Input
 				type="date"
 				label="Date applied"
 				val={dateApplied}
 				setValue={setDateApplied}
 			/>
-			{dateAppliedError && <p>Date applied can't be empty</p>}
+			{dateAppliedError && (
+				<p className={styles.errorMsg}>Date applied can't be empty</p>
+			)}
 			<BasicSelect label="Status" val={status} setVal={setStatus} />
-			{statusError && <p>Status can't be empty</p>}
+			{statusError && (
+				<p className={styles.errorMsg}>Status can't be empty</p>
+			)}
 			<div className={styles.btns}>
 				<IconButton onClick={props.toggleForm}>
 					<Icon>close</Icon>

@@ -5,8 +5,9 @@
 	padding: 1em;
 	border-radius: 10px;
 	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-	background-color: white;
 	margin-bottom: 250px;
+	background-color: #282828;
+	color: white;
 }
 
 .btns {
@@ -16,6 +17,7 @@
 	display: flex;
 	flex-direction: column;
 	align-content: space-between;
+	color: #282828;
 }
 
 .container {
@@ -26,19 +28,13 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	background-image: linear-gradient(
-		to right,
-		#eea2a2 0%,
-		#bbc1bf 19%,
-		#57c6e1 42%,
-		#b49fda 79%,
-		#7ac5d8 100%
-	);
+	background-color: #121212;
 }
 
 .switchModeText {
 	font-size: 0.7em;
 	margin: 0.75em 0 0.2em 0;
+	color: white;
 }
 
 .errorMsg {
@@ -50,7 +46,7 @@
 .title {
 	margin-top: 225px;
 	font-weight: 700;
-	color: black;
+	color: white;
 	text-decoration: none;
 	font-size: 2rem;
 	margin-bottom: 25px;

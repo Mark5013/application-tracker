@@ -1,5 +1,6 @@
 .form {
-	background-color: white;
+	background-color: #282828;
+	color: white;
 	padding: 1em;
 	width: 30%;
 	min-width: 300px;
@@ -18,4 +19,10 @@
 
 .btns {
 	align-self: flex-end;
+}
+
+.errorMsg {
+	margin: 0.25em;
+	font-size: 0.5em;
+	color: red;
 }
