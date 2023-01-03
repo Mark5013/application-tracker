@@ -2,8 +2,11 @@
 	border-radius: 5px;
 	padding: 0.5em;
 	width: 80%;
+	background-color: #404040;
+	color: white;
 }
 
 .container {
 	padding: 0.5em 0;
+	background-color: #282828;
 }

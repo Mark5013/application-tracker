@@ -129,6 +129,7 @@ const SignUpForm = (props: { switchForm: Function }) => {
 				)}
 				<div className={styles.btns}>
 					<Button
+						color="inherit"
 						variant="contained"
 						onClick={submitFormHandler}
 						type="submit">
@@ -137,7 +138,10 @@ const SignUpForm = (props: { switchForm: Function }) => {
 					<p className={styles.switchModeText}>
 						Already have an account?
 					</p>
-					<Button variant="outlined" onClick={switchMode}>
+					<Button
+						variant="outlined"
+						onClick={switchMode}
+						color="info">
 						Login
 					</Button>
 				</div>
