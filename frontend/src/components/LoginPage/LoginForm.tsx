@@ -2,16 +2,26 @@ import React, { useState } from "react";
 import styles from "./LoginForm.module.css";
 import Input from "../Shared/Input";
 import { Button } from "@mui/material";
+import useHttpReq from "../../hooks/use-HttpReq";
 
 const LoginForm = (props: { switchForm: Function }) => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [accountNotFound, setAccountNotFound] = useState(false);
+	const sendRequest = useHttpReq();
 
-	const submitFormHandler = (event: React.MouseEvent<Element>) => {
+	const submitFormHandler = async (event: React.MouseEvent<Element>) => {
 		event.preventDefault();
 		// send data to server and validate credentials -> then log user in if valid
 		// if no acc, set account not found to true
+		const temp = await sendRequest(
+			"http://localhost:5000/auth/login",
+			"POST",
+			{ "Content-type": "application/json" },
+			JSON.stringify({ email, password })
+		);
+
+		console.log(temp);
 		console.log(email);
 		console.log(password);
 	};
