@@ -35,7 +35,7 @@ const SignUpForm = (props: { switchForm: Function }) => {
 
 	const sendRequest = useHttpReq();
 
-	const submitFormHandler = (event: React.MouseEvent<Element>) => {
+	const submitFormHandler = async (event: React.MouseEvent<Element>) => {
 		event.preventDefault();
 		let hasError = false;
 
@@ -69,12 +69,14 @@ const SignUpForm = (props: { switchForm: Function }) => {
 
 		// send data to server to create acc and redirect user on success
 		if (!hasError) {
-			const temp = sendRequest(
+			const temp = await sendRequest(
 				"http://localhost:5000/auth/signUp",
 				"POST",
 				{ "Content-type": "application/json" },
 				JSON.stringify({ email, password, firstName, lastName })
 			);
+
+			console.log(temp);
 		}
 	};
 
