@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./SignUpForm.module.css";
 import { Button } from "@mui/material";
 import Input from "../Shared/Input";
+import useHttpReq from "../../hooks/use-HttpReq";
 
 function ValidateEmail(mail: string) {
 	if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
@@ -31,6 +32,8 @@ const SignUpForm = (props: { switchForm: Function }) => {
 	const [passwordError, setPasswordError] = useState(false);
 	const [firstError, setFirstError] = useState(false);
 	const [lastError, setLastError] = useState(false);
+
+	const sendRequest = useHttpReq();
 
 	const submitFormHandler = (event: React.MouseEvent<Element>) => {
 		event.preventDefault();
@@ -66,10 +69,12 @@ const SignUpForm = (props: { switchForm: Function }) => {
 
 		// send data to server to create acc and redirect user on success
 		if (!hasError) {
-			console.log(firstName);
-			console.log(lastName);
-			console.log(email);
-			console.log(password);
+			const temp = sendRequest(
+				"http://localhost:5000/auth/signUp",
+				"POST",
+				{ "Content-type": "application/json" },
+				JSON.stringify({ email, password, firstName, lastName })
+			);
 		}
 	};
 
