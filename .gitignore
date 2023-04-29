@@ -10,8 +10,7 @@ frontend/node_modules
 /build
 
 # misc
-frontend/.env
-backend/.env
+**/.env
 .DS_Store
 .env.local
 .env.development.local
