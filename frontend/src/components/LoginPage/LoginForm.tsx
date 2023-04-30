@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import styles from "./LoginForm.module.css";
 import Input from "../Shared/Input";
 import { Button } from "@mui/material";
-import useHttpReq from "../../hooks/use-HttpReq";
 import { useNavigate } from "react-router-dom";
+
+import useHttpReq from "../../hooks/use-HttpReq";
+import UserContext from "../../store/userContext";
 
 const LoginForm = (props: { switchForm: Function }) => {
 	const [email, setEmail] = useState("");
@@ -11,6 +13,7 @@ const LoginForm = (props: { switchForm: Function }) => {
 	const [errorMessage, setErrorMessage] = useState("");
 	const [accountNotFound, setAccountNotFound] = useState(false);
 
+	const userCtx = useContext(UserContext);
 	const sendRequest = useHttpReq();
 	const navigate = useNavigate();
 
@@ -27,8 +30,17 @@ const LoginForm = (props: { switchForm: Function }) => {
 			);
 
 			// save user to context and go to apps page
-			console.log(user);
-			navigate("/apps", { replace: true });
+			if (user) {
+				userCtx.login(
+					user.message.id,
+					user.message.email,
+					user.message.firstName,
+					user.message.lastName
+				);
+				navigate("/apps", { replace: true });
+			} else {
+				throw new Error("Couldn't login, please try again");
+			}
 		} catch (err) {
 			setAccountNotFound(true);
 

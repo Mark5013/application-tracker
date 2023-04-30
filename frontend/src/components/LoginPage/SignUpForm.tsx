@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./SignUpForm.module.css";
 import { Button } from "@mui/material";
 import Input from "../Shared/Input";
 import useHttpReq from "../../hooks/use-HttpReq";
+import UserContext from "../../store/userContext";
 
 function ValidateEmail(mail: string) {
 	if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
@@ -38,6 +39,7 @@ const SignUpForm = (props: { switchForm: Function }) => {
 
 	const sendRequest = useHttpReq();
 	const navigate = useNavigate();
+	const userCtx = useContext(UserContext);
 
 	const submitFormHandler = async (event: React.MouseEvent<Element>) => {
 		event.preventDefault();
@@ -85,6 +87,12 @@ const SignUpForm = (props: { switchForm: Function }) => {
 				console.log(user);
 
 				// navigate to home page
+				userCtx.login(
+					user.message.id,
+					user.message.email,
+					user.message.firstName,
+					user.message.lastName
+				);
 				navigate("/apps", { replace: true });
 			} catch (err) {
 				// show err message if user already exists
