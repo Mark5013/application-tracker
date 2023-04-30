@@ -20,11 +20,13 @@ const useHttpReq = () => {
 				const resData = await res.json();
 
 				if (!res.ok) {
-					throw new Error("Something went wrong with http request");
+					throw new Error(resData.message);
 				}
 
 				return resData;
-			} catch (err) {}
+			} catch (err) {
+				throw err;
+			}
 		},
 		[]
 	);

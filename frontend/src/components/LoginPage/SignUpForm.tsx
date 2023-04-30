@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./SignUpForm.module.css";
 import { Button } from "@mui/material";
 import Input from "../Shared/Input";
@@ -33,7 +34,10 @@ const SignUpForm = (props: { switchForm: Function }) => {
 	const [firstError, setFirstError] = useState(false);
 	const [lastError, setLastError] = useState(false);
 
+	const [emailExists, setEmailExists] = useState(false);
+
 	const sendRequest = useHttpReq();
+	const navigate = useNavigate();
 
 	const submitFormHandler = async (event: React.MouseEvent<Element>) => {
 		event.preventDefault();
@@ -69,14 +73,28 @@ const SignUpForm = (props: { switchForm: Function }) => {
 
 		// send data to server to create acc and redirect user on success
 		if (!hasError) {
-			const temp = await sendRequest(
-				"http://localhost:5000/auth/signUp",
-				"POST",
-				{ "Content-type": "application/json" },
-				JSON.stringify({ email, password, firstName, lastName })
-			);
+			try {
+				const user = await sendRequest(
+					"http://localhost:5000/auth/signUp",
+					"POST",
+					{ "Content-type": "application/json" },
+					JSON.stringify({ email, password, firstName, lastName })
+				);
 
-			console.log(temp);
+				// save user to ctx
+				console.log(user);
+
+				// navigate to home page
+				navigate("/apps", { replace: true });
+			} catch (err) {
+				// show err message if user already exists
+				if (
+					err instanceof Error &&
+					err.message == "User already exists"
+				) {
+					setEmailExists(true);
+				}
+			}
 		}
 	};
 
@@ -120,6 +138,9 @@ const SignUpForm = (props: { switchForm: Function }) => {
 				/>
 				{emailError && (
 					<p className={styles.errorMsg}>Please enter valid email</p>
+				)}
+				{emailExists && (
+					<p className={styles.errorMsg}>Email already exists</p>
 				)}
 				<Input
 					type="password"
