@@ -2,6 +2,14 @@ import { NextFunction, Request, Response } from "express";
 import pool from "../queries";
 import bcrypt from "bcrypt";
 
+type User = {
+	id: number;
+	email: string;
+	password: string;
+	firstname: string;
+	lastname: string;
+};
+
 function ValidateEmail(mail: string) {
 	if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
 		return true;
@@ -71,7 +79,7 @@ export const signUpUser = (req: Request, res: Response, next: NextFunction) => {
 									throw new Error();
 								}
 								// on success return user
-								const user = results.rows[0];
+								const user: User = results.rows[0];
 
 								res.status(201).json({
 									message: {
@@ -91,11 +99,44 @@ export const signUpUser = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const loginUser = (req: Request, res: Response, next: NextFunction) => {
-	console.log(req.body);
-	pool.query("SELECT * FROM users;", (error, results) => {
-		if (error) {
-			throw error;
+	const { email, password } = req.body;
+
+	// query database for matching emai
+	pool.query(
+		"SELECT * FROM users WHERE email=$1;",
+		[email],
+		(error, results) => {
+			if (error) {
+				throw error;
+			}
+
+			// if no matching email, return err
+			if (results.rowCount == 0) {
+				res.status(400).json({ message: "Incorrect email" });
+			} else {
+				const user: User = results.rows[0];
+
+				// compare passwords
+				bcrypt.compare(password, user.password, (err, match) => {
+					if (err) {
+						throw err;
+					}
+
+					// if match, return user with succ, else return err
+					if (match) {
+						res.status(200).json({
+							message: {
+								id: user.id,
+								email: user.email,
+								firstName: user.firstname,
+								lastName: user.lastname,
+							},
+						});
+					} else {
+						res.status(400).json({ message: "Invalid password" });
+					}
+				});
+			}
 		}
-		res.status(200).json(results.rows);
-	});
+	);
 };

@@ -3,27 +3,39 @@ import styles from "./LoginForm.module.css";
 import Input from "../Shared/Input";
 import { Button } from "@mui/material";
 import useHttpReq from "../../hooks/use-HttpReq";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = (props: { switchForm: Function }) => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [errorMessage, setErrorMessage] = useState("");
 	const [accountNotFound, setAccountNotFound] = useState(false);
+
 	const sendRequest = useHttpReq();
+	const navigate = useNavigate();
 
 	const submitFormHandler = async (event: React.MouseEvent<Element>) => {
 		event.preventDefault();
 		// send data to server and validate credentials -> then log user in if valid
 		// if no acc, set account not found to true
-		const temp = await sendRequest(
-			"http://localhost:5000/auth/login",
-			"POST",
-			{ "Content-type": "application/json" },
-			JSON.stringify({ email, password })
-		);
+		try {
+			const user = await sendRequest(
+				"http://localhost:5000/auth/login",
+				"POST",
+				{ "Content-type": "application/json" },
+				JSON.stringify({ email, password })
+			);
 
-		console.log(temp);
-		console.log(email);
-		console.log(password);
+			// save user to context and go to apps page
+			console.log(user);
+			navigate("/apps", { replace: true });
+		} catch (err) {
+			setAccountNotFound(true);
+
+			if (err instanceof Error) {
+				setErrorMessage(err.message);
+			}
+		}
 	};
 
 	const switchMode = (event: React.MouseEvent<Element>) => {
@@ -49,9 +61,7 @@ const LoginForm = (props: { switchForm: Function }) => {
 					setValue={setPassword}
 				/>
 				{accountNotFound && (
-					<p className={styles.errorMsg}>
-						Email and password don't match, please try again
-					</p>
+					<p className={styles.errorMsg}>{errorMessage}</p>
 				)}
 				<div className={styles.btns}>
 					<Button
