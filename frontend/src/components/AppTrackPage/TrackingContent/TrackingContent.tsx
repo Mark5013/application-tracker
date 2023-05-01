@@ -5,9 +5,11 @@ import AppTrackDivider from "./AppTrackDivider";
 import Application from "./Application";
 import BackDrop from "../../Shared/BackDrop";
 import ApplicationForm from "./ApplicationForm";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Grid, Icon, IconButton } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
+import useHttpReq from "../../../hooks/use-HttpReq";
+import UserContext from "../../../store/userContext";
 
 class App {
 	company: string;
@@ -15,24 +17,30 @@ class App {
 	date: string;
 	status: string;
 	id: string;
+	uid: number;
 	constructor(
 		company: string,
 		position: string,
 		date: string,
 		status: string,
-		id: string
+		id: string,
+		uid: number
 	) {
 		this.company = company;
 		this.position = position;
 		this.date = date;
 		this.status = status;
 		this.id = id;
+		this.uid = uid;
 	}
 }
 
 const portal = document.getElementById("backdrop")! as HTMLDivElement;
 
 const TrackingContent: React.FC = () => {
+	const sendReq = useHttpReq();
+	const userCtx = useContext(UserContext);
+
 	// all applications
 	const [appliedApps, setAppliedApps] = useState<App[]>([]);
 	const [inProgressApps, setInProgressApps] = useState<App[]>([]);
@@ -88,12 +96,30 @@ const TrackingContent: React.FC = () => {
 		status: string
 	) => {
 		//create app
-		const newApp = new App(companyName, position, date, status, uuidv4());
+		const newApp = new App(
+			companyName,
+			position,
+			date,
+			status,
+			uuidv4(),
+			userCtx.user.id
+		);
 		let curApps = applicationHash[status];
 		const setCurApps = setApplicationHash[status];
 
+		try {
+			const data = sendReq(
+				"http://localhost:5000/apps/addApplication",
+				"POST",
+				{ "Content-type": "application/json" },
+				JSON.stringify(newApp)
+			);
+
+			console.log(data);
+		} catch (err) {}
+
 		curApps.push(newApp);
-		localStorage.setItem(`${status}`, JSON.stringify(curApps));
+		//localStorage.setItem(`${status}`, JSON.stringify(curApps));
 		setCurApps(curApps);
 
 		// close form
