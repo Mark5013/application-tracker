@@ -16,21 +16,21 @@ class App {
 	position: string;
 	date: string;
 	status: string;
-	id: string;
+	appid: string;
 	uid: number;
 	constructor(
 		company: string,
 		position: string,
 		date: string,
 		status: string,
-		id: string,
+		appid: string,
 		uid: number
 	) {
 		this.company = company;
 		this.position = position;
 		this.date = date;
 		this.status = status;
-		this.id = id;
+		this.appid = appid;
 		this.uid = uid;
 	}
 }
@@ -74,12 +74,45 @@ const TrackingContent: React.FC = () => {
 
 	// load up users apps from local storage, soon to be connected to database
 	useEffect(() => {
-		setAppliedApps(JSON.parse(localStorage.getItem("Applied") || "[]"));
-		setInProgressApps(
-			JSON.parse(localStorage.getItem("In-Progress") || "[]")
-		);
-		setOfferApps(JSON.parse(localStorage.getItem("Offer") || "[]"));
-		setRejectedApps(JSON.parse(localStorage.getItem("Rejected") || "[]"));
+		let applications: any;
+
+		// gets apps from database
+		const getApps = async () => {
+			const res = await sendReq(
+				`http://localhost:5000/apps/getApps/${userCtx.user.id}`,
+				"GET",
+				{ "Content-type": "application/json" }
+			);
+			applications = res.message;
+		};
+
+		// loads the apps into respective arrays
+		const setUpApps = async () => {
+			await getApps();
+			console.log(applications);
+			const aApps = applications.filter(
+				(app: App) => app.status == "Applied"
+			);
+
+			const pApps = applications.filter(
+				(app: App) => app.status == "In-Progress"
+			);
+
+			const oApps = applications.filter(
+				(app: App) => app.status == "Offer"
+			);
+
+			const rApps = applications.filter(
+				(app: App) => app.status == "Rejected"
+			);
+
+			setAppliedApps([...aApps]);
+			setInProgressApps([...pApps]);
+			setOfferApps([...oApps]);
+			setRejectedApps([...rApps]);
+		};
+
+		setUpApps();
 	}, []);
 
 	// toggles form
@@ -89,7 +122,7 @@ const TrackingContent: React.FC = () => {
 
 	// creates application and adds it to proper storage in local storage
 	// soon to be connected to data base
-	const addApplication = (
+	const addApplication = async (
 		companyName: string,
 		position: string,
 		date: string,
@@ -108,19 +141,19 @@ const TrackingContent: React.FC = () => {
 		const setCurApps = setApplicationHash[status];
 
 		try {
-			const data = sendReq(
+			const res = await sendReq(
 				"http://localhost:5000/apps/addApplication",
 				"POST",
 				{ "Content-type": "application/json" },
 				JSON.stringify(newApp)
 			);
 
-			console.log(data);
-		} catch (err) {}
-
-		curApps.push(newApp);
-		//localStorage.setItem(`${status}`, JSON.stringify(curApps));
-		setCurApps(curApps);
+			//localStorage.setItem(`${status}`, JSON.stringify(curApps));
+			curApps.push(newApp);
+			setCurApps(curApps);
+		} catch (err) {
+			console.log(err);
+		}
 
 		// close form
 		toggleForm();
@@ -148,10 +181,10 @@ const TrackingContent: React.FC = () => {
 		if (prevStatus != status) {
 			oldApps = applicationHash[prevStatus];
 			setOldApps = setApplicationHash[prevStatus];
-			appToEdit = oldApps.find((app) => app.id === appId);
+			appToEdit = oldApps.find((app) => app.appid === appId);
 		} else {
 			// if not, just use cur apps
-			appToEdit = curApps.find((app) => app.id == appId);
+			appToEdit = curApps.find((app) => app.appid == appId);
 		}
 
 		// edit app
@@ -171,7 +204,7 @@ const TrackingContent: React.FC = () => {
 			// if status has changed, filter old one, update old one in local storage, and set old one
 			if (oldApps && setOldApps) {
 				const filteredOldApps = oldApps.filter(
-					(app) => app.id !== appId
+					(app) => app.appid !== appId
 				);
 				localStorage.setItem(
 					`${prevStatus}`,
@@ -189,7 +222,7 @@ const TrackingContent: React.FC = () => {
 		let curApps = applicationHash[status];
 		let setCurApps = setApplicationHash[status];
 
-		const filteredApps = curApps.filter((app) => app.id !== appId);
+		const filteredApps = curApps.filter((app) => app.appid !== appId);
 		localStorage.setItem(`${status}`, JSON.stringify(filteredApps));
 		setCurApps(filteredApps);
 	};

@@ -31,3 +31,30 @@ export const addApplication = (
 		);
 	}
 };
+
+export const getApplications = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	console.log(req.params.uid);
+
+	const uid = req.params.uid;
+
+	if (uid == null) {
+		res.status(400).json({ message: "Invalid user" });
+	} else {
+		pool.query(
+			"SELECT * from apps WHERE uid=$1 ORDER BY status;",
+			[uid],
+			(err, results) => {
+				if (err) {
+					res.status(500).json({ message: "Something went wrong" });
+				} else {
+					console.log(results.rows);
+					res.status(200).json({ message: results.rows || [] });
+				}
+			}
+		);
+	}
+};

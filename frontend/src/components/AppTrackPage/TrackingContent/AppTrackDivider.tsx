@@ -7,7 +7,7 @@ interface App {
 	position: string;
 	date: string;
 	status: string;
-	id: string;
+	appid: string;
 }
 
 interface AppTrackDividerProps {
@@ -34,12 +34,12 @@ const AppTrackDivider: React.FC<AppTrackDividerProps> = (props) => {
 			<div className={styles.divider}>
 				{filteredApps.map((app) => (
 					<Application
-						key={app.id}
+						key={app.appid}
 						company={app.company}
 						position={app.position}
 						date={app.date}
 						status={app.status}
-						id={app.id}
+						id={app.appid}
 						deleteApp={props.deleteApp}
 						editApp={props.editApp}
 						toggleForm={props.toggleForm}
