@@ -7,8 +7,8 @@ export const addApplication = (
 	next: NextFunction
 ) => {
 	// extract params from body
-	const { company, position, date, status, id, uid } = req.body;
-
+	const { company, position, date, status, appid: id, uid } = req.body;
+	console.log(company, position, date, status, id, uid);
 	// if any are null 400 status
 	if (
 		!company.trim() ||

@@ -68,7 +68,7 @@ export const signUpUser = (req: Request, res: Response, next: NextFunction) => {
 								},
 							},
 							sec2,
-							{ expiresIn: "1000h" }
+							{ expiresIn: "300h" }
 						);
 
 						// create user
@@ -97,7 +97,7 @@ export const signUpUser = (req: Request, res: Response, next: NextFunction) => {
 										},
 									},
 									sec,
-									{ expiresIn: "336h" }
+									{ expiresIn: "168h" }
 								);
 
 								// store refresh token as httpOnly cookie for 30 days
@@ -171,9 +171,8 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
 								},
 							},
 							sec,
-							{ expiresIn: "5s" }
+							{ expiresIn: "168h" }
 						);
-						//336h
 						// create new refreshToken
 						const refreshToken = jwt.sign(
 							{
@@ -184,7 +183,7 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
 								},
 							},
 							sec2,
-							{ expiresIn: "15s" }
+							{ expiresIn: "300h" }
 						);
 						// 1000h
 						// store refreshToken as httpOnly cookie for 30 days

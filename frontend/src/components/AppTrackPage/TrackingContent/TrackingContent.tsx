@@ -131,12 +131,14 @@ const TrackingContent: React.FC = () => {
 		status: string
 	) => {
 		//create app
+		const appId = uuidv4();
+		console.log(appId);
 		const newApp = new App(
 			companyName,
 			position,
 			date,
 			status,
-			uuidv4(),
+			appId,
 			userCtx.user.id
 		);
 		let curApps = applicationHash[status];
@@ -146,10 +148,12 @@ const TrackingContent: React.FC = () => {
 			const res = await sendReq(
 				"http://localhost:5000/apps/addApplication",
 				"POST",
-				{ "Content-type": "application/json" },
+				{
+					"Content-type": "application/json",
+					Authorization: `Bearer ${userCtx.user.accessToken}`,
+				},
 				JSON.stringify(newApp)
 			);
-
 			curApps.push(newApp);
 			setCurApps(curApps);
 		} catch (err) {

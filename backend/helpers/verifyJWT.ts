@@ -22,7 +22,7 @@ const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
 			if (err) {
 				res.status(403).json({ message: "Invalid token" });
 			} else {
-				console.log(token);
+				next();
 			}
 		});
 	}

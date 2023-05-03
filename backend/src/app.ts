@@ -14,6 +14,7 @@ app.use(cookieParser());
 const corsConfig = {
 	credentials: true,
 	origin: true,
+	allowedHeaders: ["Content-type", "Authorization"],
 };
 app.use(cors(corsConfig));
 
