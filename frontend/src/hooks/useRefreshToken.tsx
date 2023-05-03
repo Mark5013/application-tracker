@@ -18,10 +18,8 @@ const useRefreshToken = () => {
 				"include"
 			);
 		} catch (err) {
-			console.log(err);
+			throw new Error("Something went wrong refreshing access token");
 		}
-
-		console.log(`data from refresh route: ${response}`);
 
 		userCtx.login(
 			response.id,

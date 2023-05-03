@@ -13,6 +13,7 @@ const Header: React.FC = () => {
 
 	const handleLogoutClick = async () => {
 		try {
+			// send req to logout route
 			await sendReq(
 				"http://localhost:5000/auth/logout",
 				"GET",
@@ -22,6 +23,7 @@ const Header: React.FC = () => {
 			);
 		} catch (err) {
 		} finally {
+			// update state and send user to home page
 			userCtx.logout();
 			navigate("/", { replace: false });
 		}

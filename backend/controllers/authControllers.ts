@@ -171,9 +171,9 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
 								},
 							},
 							sec,
-							{ expiresIn: "336h" }
+							{ expiresIn: "5s" }
 						);
-
+						//336h
 						// create new refreshToken
 						const refreshToken = jwt.sign(
 							{
@@ -184,9 +184,9 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
 								},
 							},
 							sec2,
-							{ expiresIn: "1000h" }
+							{ expiresIn: "15s" }
 						);
-
+						// 1000h
 						// store refreshToken as httpOnly cookie for 30 days
 						res.cookie("jwt", refreshToken, {
 							secure: true,
