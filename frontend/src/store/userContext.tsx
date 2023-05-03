@@ -8,12 +8,14 @@ const UserContext = createContext({
 		firstName: "",
 		lastName: "",
 		isLoggedIn: false,
+		accessToken: "",
 	},
 	login: (
 		id: number,
 		email: string,
 		firstName: string,
-		lastName: string
+		lastName: string,
+		accessToken: string
 	) => {},
 	logout: () => {},
 });
@@ -25,15 +27,24 @@ export const UserContextProvider = (props: any) => {
 		firstName: "",
 		lastName: "",
 		isLoggedIn: false,
+		accessToken: "",
 	});
 
 	const login = (
 		id: number,
 		email: string,
 		firstName: string,
-		lastName: string
+		lastName: string,
+		accessToken: string
 	) => {
-		setUser({ id, email, firstName, lastName, isLoggedIn: true });
+		setUser({
+			id,
+			email,
+			firstName,
+			lastName,
+			isLoggedIn: true,
+			accessToken,
+		});
 	};
 
 	const logout = () => {
@@ -43,10 +54,11 @@ export const UserContextProvider = (props: any) => {
 			firstName: "",
 			lastName: "",
 			isLoggedIn: false,
+			accessToken: "",
 		});
 	};
 
-	const UserContextValue = { user, login, logout };
+	const UserContextValue = { user, login, logout, setUser };
 
 	return (
 		<UserContext.Provider value={UserContextValue}>

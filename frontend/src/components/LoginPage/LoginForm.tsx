@@ -26,18 +26,28 @@ const LoginForm = (props: { switchForm: Function }) => {
 				"http://localhost:5000/auth/login",
 				"POST",
 				{ "Content-type": "application/json" },
-				JSON.stringify({ email, password })
+				JSON.stringify({ email, password }),
+				"include"
 			);
-
+			const accessToken = user?.message?.accessToken;
 			// save user to context and go to apps page
 			if (user) {
-				userCtx.login(
-					user.message.id,
-					user.message.email,
-					user.message.firstName,
-					user.message.lastName
-				);
-				navigate("/apps", { replace: true });
+				try {
+					userCtx.login(
+						user.message.id,
+						user.message.email,
+						user.message.firstName,
+						user.message.lastName,
+						accessToken
+					);
+				} catch (err) {
+					console.log(err);
+				} finally {
+					console.log(
+						`just logged in ${JSON.stringify(userCtx.user)}`
+					);
+					navigate("/apps", { replace: true });
+				}
 			} else {
 				throw new Error("Couldn't login, please try again");
 			}

@@ -80,18 +80,20 @@ const SignUpForm = (props: { switchForm: Function }) => {
 					"http://localhost:5000/auth/signUp",
 					"POST",
 					{ "Content-type": "application/json" },
-					JSON.stringify({ email, password, firstName, lastName })
+					JSON.stringify({ email, password, firstName, lastName }),
+					"include"
 				);
 
 				// save user to ctx
 				console.log(user);
-
+				const accessToken = user?.message?.accessToken;
 				// navigate to home page
 				userCtx.login(
 					user.message.id,
 					user.message.email,
 					user.message.firstName,
-					user.message.lastName
+					user.message.lastName,
+					accessToken
 				);
 				navigate("/apps", { replace: true });
 			} catch (err) {

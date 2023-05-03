@@ -40,6 +40,7 @@ const portal = document.getElementById("backdrop")! as HTMLDivElement;
 const TrackingContent: React.FC = () => {
 	const sendReq = useHttpReq();
 	const userCtx = useContext(UserContext);
+	console.log(`app tracking page: ${JSON.stringify(userCtx.user)}`);
 
 	// all applications
 	const [appliedApps, setAppliedApps] = useState<App[]>([]);
@@ -78,10 +79,11 @@ const TrackingContent: React.FC = () => {
 
 		// gets apps from database
 		const getApps = async () => {
+			console.log(`getting apps ${JSON.stringify(userCtx.user)}`);
 			const res = await sendReq(
 				`http://localhost:5000/apps/getApps/${userCtx.user.id}`,
 				"GET",
-				{ "Content-type": "application/json" }
+				{ Authorization: `Bearer ${userCtx.user.accessToken}` }
 			);
 			applications = res.message;
 		};
@@ -89,7 +91,7 @@ const TrackingContent: React.FC = () => {
 		// loads the apps into respective arrays
 		const setUpApps = async () => {
 			await getApps();
-			console.log(applications);
+
 			const aApps = applications.filter(
 				(app: App) => app.status == "Applied"
 			);
@@ -148,7 +150,6 @@ const TrackingContent: React.FC = () => {
 				JSON.stringify(newApp)
 			);
 
-			//localStorage.setItem(`${status}`, JSON.stringify(curApps));
 			curApps.push(newApp);
 			setCurApps(curApps);
 		} catch (err) {
