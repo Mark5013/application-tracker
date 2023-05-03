@@ -229,14 +229,13 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
 export const logoutUser = (req: Request, res: Response) => {
 	// extract cookie
 	const cookies = req.cookies;
-
 	// if cookie doesn't exist, just send 401 status
 	if (!cookies?.jwt) {
 		res.sendStatus(401);
 	} else {
 		// extract refresh token from cookie
 		const refreshToken = cookies.jwt;
-
+		console.log(`logout: ${refreshToken}`);
 		// query database for matching refresh token and clear it if matched or not
 		pool.query(
 			"SELECT * FROM users WHERE refreshtoken=$1;",
@@ -252,13 +251,13 @@ export const logoutUser = (req: Request, res: Response) => {
 					res.sendStatus(204);
 				} else {
 					pool.query(
-						'UPDATE users SET refreshtoken="" WHERE refreshtoken=$1;',
+						"UPDATE users SET refreshtoken=null WHERE refreshtoken=$1;",
 						[refreshToken],
 						(err, results2) => {
 							if (err) {
+								console.log(err);
 								res.sendStatus(500);
 							} else {
-								// set secure true for prod
 								res.clearCookie("jwt", {
 									secure: true,
 									httpOnly: true,

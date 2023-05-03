@@ -4,15 +4,27 @@ import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import UserContext from "../../../store/userContext";
+import useHttpReq from "../../../hooks/use-HttpReq";
 
 const Header: React.FC = () => {
 	const navigate = useNavigate();
 	const userCtx = useContext(UserContext);
+	const sendReq = useHttpReq();
 
-	const handleLogoutClick = () => {
-		console.log(userCtx);
-		userCtx.logout();
-		navigate("/", { replace: false });
+	const handleLogoutClick = async () => {
+		try {
+			await sendReq(
+				"http://localhost:5000/auth/logout",
+				"GET",
+				{},
+				null,
+				"include"
+			);
+		} catch (err) {
+		} finally {
+			userCtx.logout();
+			navigate("/", { replace: false });
+		}
 	};
 
 	return (
