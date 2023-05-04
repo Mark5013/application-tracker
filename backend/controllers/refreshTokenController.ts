@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import pool from "../queries";
 dotenv.config();
+import { createAccessToken } from "../helpers/jwtHelpers";
 
 // uses refresh token to create new access token
 const handleRefreshToken = (req: Request, res: Response) => {
@@ -36,20 +37,15 @@ const handleRefreshToken = (req: Request, res: Response) => {
 						) {
 							res.sendStatus(403);
 						} else {
-							const sec2: jwt.Secret =
-								process.env.ACCESS_TOKEN_SECRET!;
-							const accessToken = jwt.sign(
-								{
-									UserInfo: {
-										id: results.rows[0].id,
-										email: results.rows[0].email,
-										firstName: results.rows[0].firstName,
-										lastName: results.rows[0].lastName,
-									},
+							//create new access token
+							const accessToken = createAccessToken({
+								UserInfo: {
+									id: results.rows[0].id,
+									email: results.rows[0].email,
+									firstName: results.rows[0].firstName,
+									lastName: results.rows[0].lastName,
 								},
-								sec2,
-								{ expiresIn: "336h" }
-							);
+							});
 
 							res.status(200).json({
 								message: accessToken,

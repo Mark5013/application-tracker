@@ -3,7 +3,7 @@ import { ValidateEmail, ValidatePassword } from "../helpers/validationHelpers";
 import pool from "../queries";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
+import { createAccessToken, createRefreshToken } from "../helpers/jwtHelpers";
 dotenv.config();
 
 type User = {
@@ -55,21 +55,10 @@ export const signUpUser = (req: Request, res: Response, next: NextFunction) => {
 							throw new Error();
 						}
 
-						// get the refresh token secret
-						const sec2: jwt.Secret =
-							process.env.REFRESH_TOKEN_SECRET!;
 						// create their refresh token
-						const refreshToken = jwt.sign(
-							{
-								UserInfo: {
-									email,
-									firstName,
-									lastName,
-								},
-							},
-							sec2,
-							{ expiresIn: "300h" }
-						);
+						const refreshToken = createRefreshToken({
+							UserInfo: { email, firstName, lastName },
+						});
 
 						// create user
 						pool.query(
@@ -83,22 +72,16 @@ export const signUpUser = (req: Request, res: Response, next: NextFunction) => {
 								}
 								// on success return user with created jwt
 								const user: User = results.rows[0];
-								// get access token secret
-								const sec: jwt.Secret =
-									process.env.ACCESS_TOKEN_SECRET!;
+
 								// create access token
-								const accessToken = jwt.sign(
-									{
-										UserInfo: {
-											id: user.id,
-											email: email,
-											firstName: user.firstname,
-											lastName: user.lastname,
-										},
+								const accessToken = createAccessToken({
+									UserInfo: {
+										id: user.id,
+										email: email,
+										firstName: user.firstname,
+										lastName: user.lastname,
 									},
-									sec,
-									{ expiresIn: "168h" }
-								);
+								});
 
 								// store refresh token as httpOnly cookie for 30 days
 								res.cookie("jwt", refreshToken, {
@@ -155,37 +138,25 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
 
 					// if match, return user with acessToken, else return err
 					if (match) {
-						const sec: jwt.Secret =
-							process.env.ACCESS_TOKEN_SECRET!;
-						const sec2: jwt.Secret =
-							process.env.REFRESH_TOKEN_SECRET!;
-
 						// create new accessToken
-						const accessToken = jwt.sign(
-							{
-								UserInfo: {
-									id: user.id,
-									email: email,
-									firstName: user.firstname,
-									lastName: user.lastname,
-								},
+						const accessToken = createAccessToken({
+							UserInfo: {
+								id: user.id,
+								email: email,
+								firstName: user.firstname,
+								lastName: user.lastname,
 							},
-							sec,
-							{ expiresIn: "168h" }
-						);
+						});
+
 						// create new refreshToken
-						const refreshToken = jwt.sign(
-							{
-								UserInfo: {
-									email: email,
-									firstName: user.firstname,
-									lastName: user.lastname,
-								},
+						const refreshToken = createRefreshToken({
+							UserInfo: {
+								email: email,
+								firstName: user.firstname,
+								lastName: user.lastname,
 							},
-							sec2,
-							{ expiresIn: "300h" }
-						);
-						// 1000h
+						});
+
 						// store refreshToken as httpOnly cookie for 30 days
 						res.cookie("jwt", refreshToken, {
 							secure: true,

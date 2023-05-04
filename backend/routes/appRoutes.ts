@@ -3,6 +3,7 @@ import {
 	addApplication,
 	getApplications,
 	editApplication,
+	deleteApplication,
 } from "../controllers/appControllers";
 
 const router = express.Router();
@@ -12,6 +13,8 @@ router.post("/addApplication", addApplication);
 
 // edit users application
 router.put("/editApplication", editApplication);
+
+router.delete("/deleteApplication/:uid/:appid", deleteApplication);
 
 // get all of users applications
 router.get("/getApps/:uid", getApplications);

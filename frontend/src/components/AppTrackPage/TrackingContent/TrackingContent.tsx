@@ -205,7 +205,6 @@ const TrackingContent: React.FC = () => {
 			}
 
 			// set new arr in local storage
-			//localStorage.setItem(`${status}`, JSON.stringify(curApps));
 			try {
 				const res = await sendReq(
 					`http://localhost:5000/apps/editApplication`,
@@ -224,35 +223,41 @@ const TrackingContent: React.FC = () => {
 					})
 				);
 
-				console.log(res.message);
+				// if status has changed, filter old one, update old one in local storage, and set old one
+				if (oldApps && setOldApps) {
+					const filteredOldApps = oldApps.filter(
+						(app) => app.appid !== appId
+					);
+
+					setOldApps(filteredOldApps);
+				}
+				// spread operator so react realizes something changed
+				setCurApps([...curApps]);
 			} catch (err) {
 				console.log(err);
 			}
-
-			// if status has changed, filter old one, update old one in local storage, and set old one
-			if (oldApps && setOldApps) {
-				const filteredOldApps = oldApps.filter(
-					(app) => app.appid !== appId
-				);
-				/*localStorage.setItem(
-					`${prevStatus}`,
-					JSON.stringify(filteredOldApps)
-				);*/
-				setOldApps(filteredOldApps);
-			}
-			// spread operator so react realizes something changed
-			setCurApps([...curApps]);
 		}
 	};
 
 	// deletes an app
-	const deleteApp = (appId: string, status: string) => {
+	const deleteApp = async (appId: string, status: string) => {
 		let curApps = applicationHash[status];
 		let setCurApps = setApplicationHash[status];
 
 		const filteredApps = curApps.filter((app) => app.appid !== appId);
-		localStorage.setItem(`${status}`, JSON.stringify(filteredApps));
-		setCurApps(filteredApps);
+		//localStorage.setItem(`${status}`, JSON.stringify(filteredApps));
+		try {
+			const res = await sendReq(
+				`http://localhost:5000/apps/deleteApplication/${userCtx.user.id}/${appId}`,
+				"DELETE",
+				{ Authorization: `Bearer ${userCtx.user.accessToken}` }
+			);
+
+			setCurApps(filteredApps);
+			console.log(res.message);
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	// handles changes for applied app filter
