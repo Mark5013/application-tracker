@@ -165,7 +165,7 @@ const TrackingContent: React.FC = () => {
 	};
 
 	// edits an application
-	const editApplication = (
+	const editApplication = async (
 		appId: string,
 		companyName: string,
 		position: string,
@@ -203,18 +203,41 @@ const TrackingContent: React.FC = () => {
 			if (prevStatus !== status) {
 				curApps.push(appToEdit);
 			}
+
 			// set new arr in local storage
-			localStorage.setItem(`${status}`, JSON.stringify(curApps));
+			//localStorage.setItem(`${status}`, JSON.stringify(curApps));
+			try {
+				const res = await sendReq(
+					`http://localhost:5000/apps/editApplication`,
+					"PUT",
+					{
+						"Content-type": "application/json",
+						Authorization: `Bearer ${userCtx.user.accessToken}`,
+					},
+					JSON.stringify({
+						appId,
+						companyName,
+						position,
+						date,
+						status,
+						id: userCtx.user.id,
+					})
+				);
+
+				console.log(res.message);
+			} catch (err) {
+				console.log(err);
+			}
 
 			// if status has changed, filter old one, update old one in local storage, and set old one
 			if (oldApps && setOldApps) {
 				const filteredOldApps = oldApps.filter(
 					(app) => app.appid !== appId
 				);
-				localStorage.setItem(
+				/*localStorage.setItem(
 					`${prevStatus}`,
 					JSON.stringify(filteredOldApps)
-				);
+				);*/
 				setOldApps(filteredOldApps);
 			}
 			// spread operator so react realizes something changed

@@ -35,6 +35,44 @@ export const addApplication = (
 	}
 };
 
+export const editApplication = (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	// extract uid and appid from url
+	const { appId, companyName, position, date, status, id } = req.body;
+
+	if (
+		!id ||
+		!appId.trim() ||
+		!companyName.trim() ||
+		!position.trim() ||
+		!date.trim() ||
+		!status.trim()
+	) {
+		res.status(400).json({ message: "Invalid datate" });
+	} else {
+		pool.query(
+			"UPDATE apps SET company=$1, position=$2, date=$3, status=$4 WHERE appid=$5 AND uid=$6 RETURNING *;",
+			[companyName, position, date, status, appId, id],
+			(err, results) => {
+				if (err) {
+					console.log(err);
+					res.status(500).send({ message: "something went wrong" });
+				} else if (results.rowCount == 0) {
+					res.status(400).json({
+						message: "No application match given credentials",
+					});
+				} else {
+					console.log(results.rows[0]);
+					res.status(200).json({ message: results.rows[0] });
+				}
+			}
+		);
+	}
+};
+
 // get all of a users applications
 export const getApplications = (
 	req: Request,
