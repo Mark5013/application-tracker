@@ -21,6 +21,7 @@ interface AppTrackDividerProps {
 const AppTrackDivider: React.FC<AppTrackDividerProps> = (props) => {
 	// extract apps from props
 	let filteredApps = props.apps;
+	console.log(JSON.stringify(props));
 
 	// if a filter is passed in, filter the apps
 	if (props.filter.trim() !== "") {

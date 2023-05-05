@@ -10,6 +10,7 @@ import { Grid, Icon, IconButton } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import useHttpReq from "../../../hooks/use-HttpReq";
 import UserContext from "../../../store/userContext";
+import AppContext from "../../../store/appContext";
 
 class App {
 	company: string;
@@ -40,35 +41,28 @@ const portal = document.getElementById("backdrop")! as HTMLDivElement;
 const TrackingContent: React.FC = () => {
 	const sendReq = useHttpReq();
 	const userCtx = useContext(UserContext);
-	console.log(`app tracking page: ${JSON.stringify(userCtx.user)}`);
+	const appCtx = useContext(AppContext);
 
-	// all applications
-	const [appliedApps, setAppliedApps] = useState<App[]>([]);
-	const [inProgressApps, setInProgressApps] = useState<App[]>([]);
-	const [offerApps, setOfferApps] = useState<App[]>([]);
-	const [rejectedApps, setRejectedApps] = useState<App[]>([]);
-
-	// status -> application arr mapping
-	const applicationHash: { [key: string]: App[] } = {
-		Applied: appliedApps,
-		"In-Progress": inProgressApps,
-		Offer: offerApps,
-		Rejected: rejectedApps,
-	};
-
-	// status -> set application arr mapping
-	const setApplicationHash: { [key: string]: Function } = {
-		Applied: setAppliedApps,
-		"In-Progress": setInProgressApps,
-		Offer: setOfferApps,
-		Rejected: setRejectedApps,
-	};
-
-	// filters for apps
-	const [appliedFilter, setAppliedFilter] = useState("");
-	const [inProgressFilter, setInProgressFilter] = useState("");
-	const [offerFilter, setOfferFilter] = useState("");
-	const [rejectedFilter, setRejectedFilter] = useState("");
+	const {
+		appliedApps,
+		setAppliedApps,
+		inProgressApps,
+		setInProgressApps,
+		offerApps,
+		setOfferApps,
+		rejectedApps,
+		setRejectedApps,
+		appliedFilter,
+		setAppliedFilter,
+		inProgressFilter,
+		setInProgressFilter,
+		offerFilter,
+		setOfferFilter,
+		rejectedFilter,
+		setRejectedFilter,
+		applicationHash,
+		setApplicationHash,
+	} = appCtx;
 
 	// toggle for application form
 	const [showForm, setShowForm] = useState(false);
