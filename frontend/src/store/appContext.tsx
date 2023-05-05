@@ -3,8 +3,10 @@ import React, {
 	createContext,
 	Dispatch,
 	SetStateAction,
-	ReactNode,
+	useContext,
 } from "react";
+import UserContext from "./userContext";
+import useHttpReq from "../hooks/use-HttpReq";
 
 class App {
 	company: string;
@@ -49,11 +51,15 @@ type AppContextType = {
 	setRejectedFilter: Dispatch<SetStateAction<string>>;
 	applicationHash: { [key: string]: App[] };
 	setApplicationHash: { [key: string]: Dispatch<SetStateAction<App[]>> };
+	fetchApps: () => void;
 };
 
 const AppContext = createContext<AppContextType>({} as AppContextType);
 
 export const AppContextProvider = (props: any) => {
+	const userCtx = useContext(UserContext);
+	const sendReq = useHttpReq();
+
 	// all applications
 	const [appliedApps, setAppliedApps] = useState<App[]>([]);
 	const [inProgressApps, setInProgressApps] = useState<App[]>([]);
@@ -83,6 +89,49 @@ export const AppContextProvider = (props: any) => {
 		Rejected: setRejectedApps,
 	};
 
+	const fetchApps = () => {
+		let applications: any;
+
+		// gets apps from database
+		const getApps = async () => {
+			console.log(`getting apps ${JSON.stringify(userCtx.user)}`);
+			const res = await sendReq(
+				`http://localhost:5000/apps/getApps/${userCtx.user.id}`,
+				"GET",
+				{ Authorization: `Bearer ${userCtx.user.accessToken}` }
+			);
+			applications = res.message;
+		};
+
+		// loads the apps into respective arrays
+		const setUpApps = async () => {
+			await getApps();
+
+			const aApps = applications.filter(
+				(app: App) => app.status == "Applied"
+			);
+
+			const pApps = applications.filter(
+				(app: App) => app.status == "In-Progress"
+			);
+
+			const oApps = applications.filter(
+				(app: App) => app.status == "Offer"
+			);
+
+			const rApps = applications.filter(
+				(app: App) => app.status == "Rejected"
+			);
+
+			setAppliedApps([...aApps]);
+			setInProgressApps([...pApps]);
+			setOfferApps([...oApps]);
+			setRejectedApps([...rApps]);
+		};
+
+		setUpApps();
+	};
+
 	const AppContextValue = {
 		appliedApps,
 		setAppliedApps,
@@ -102,6 +151,7 @@ export const AppContextProvider = (props: any) => {
 		setRejectedFilter,
 		applicationHash,
 		setApplicationHash,
+		fetchApps,
 	};
 
 	return (

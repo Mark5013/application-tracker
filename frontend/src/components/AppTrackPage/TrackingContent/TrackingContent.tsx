@@ -62,54 +62,14 @@ const TrackingContent: React.FC = () => {
 		setRejectedFilter,
 		applicationHash,
 		setApplicationHash,
+		fetchApps,
 	} = appCtx;
 
 	// toggle for application form
 	const [showForm, setShowForm] = useState(false);
 
 	// load up users apps from local storage, soon to be connected to database
-	useEffect(() => {
-		let applications: any;
-
-		// gets apps from database
-		const getApps = async () => {
-			console.log(`getting apps ${JSON.stringify(userCtx.user)}`);
-			const res = await sendReq(
-				`http://localhost:5000/apps/getApps/${userCtx.user.id}`,
-				"GET",
-				{ Authorization: `Bearer ${userCtx.user.accessToken}` }
-			);
-			applications = res.message;
-		};
-
-		// loads the apps into respective arrays
-		const setUpApps = async () => {
-			await getApps();
-
-			const aApps = applications.filter(
-				(app: App) => app.status == "Applied"
-			);
-
-			const pApps = applications.filter(
-				(app: App) => app.status == "In-Progress"
-			);
-
-			const oApps = applications.filter(
-				(app: App) => app.status == "Offer"
-			);
-
-			const rApps = applications.filter(
-				(app: App) => app.status == "Rejected"
-			);
-
-			setAppliedApps([...aApps]);
-			setInProgressApps([...pApps]);
-			setOfferApps([...oApps]);
-			setRejectedApps([...rApps]);
-		};
-
-		setUpApps();
-	}, []);
+	useEffect(fetchApps, []);
 
 	// toggles form
 	const toggleForm = () => {
