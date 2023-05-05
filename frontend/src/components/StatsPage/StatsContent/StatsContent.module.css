@@ -1,0 +1,21 @@
+.content {
+	width: 95%;
+	height: 600px;
+	display: flex;
+	justify-content: center;
+	margin: auto;
+}
+
+.graph {
+	width: 900px;
+	height: 900px;
+	margin: auto;
+	margin-top: 4em;
+}
+
+.buttons {
+	padding: 1em;
+	margin: 0;
+	display: flex;
+	justify-content: flex-end;
+}

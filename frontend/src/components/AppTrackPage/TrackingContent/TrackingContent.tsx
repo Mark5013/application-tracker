@@ -45,13 +45,9 @@ const TrackingContent: React.FC = () => {
 
 	const {
 		appliedApps,
-		setAppliedApps,
 		inProgressApps,
-		setInProgressApps,
 		offerApps,
-		setOfferApps,
 		rejectedApps,
-		setRejectedApps,
 		appliedFilter,
 		setAppliedFilter,
 		inProgressFilter,
