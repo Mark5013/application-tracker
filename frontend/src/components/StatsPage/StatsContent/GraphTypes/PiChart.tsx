@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import AppContext from "../../../../store/appContext";
 
 export default function PiChart() {
-	const data = [
+	let data = [
 		{ status: "Applied", count: 400 },
 		{ status: "In-Progress", count: 300 },
 		{ status: "Offer", count: 300 },
@@ -15,6 +15,8 @@ export default function PiChart() {
 	data[1].count = appCtx.inProgressApps.length;
 	data[2].count = appCtx.offerApps.length;
 	data[3].count = appCtx.rejectedApps.length;
+
+	data = data.filter((x) => x.count > 0);
 
 	const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 

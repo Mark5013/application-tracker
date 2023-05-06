@@ -67,7 +67,7 @@ export const statusOverTimeStats = (
 						);
 						obj[`${obj.status}`] = obj.num_appids;
 						const [year, month, day] = obj.date.split("-");
-						obj.date = new Date(year, month, day);
+						obj.date = new Date(year, month - 1, day);
 					}
 					if (!("Offer" in results.rows[0])) {
 						results.rows[0]["Offer"] = 0;

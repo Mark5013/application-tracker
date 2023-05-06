@@ -45,6 +45,7 @@ export default function LChart(props: any) {
 	const dateFormatter = (date: string) => {
 		// return moment(date).unix();
 		const newDate = new Date(date);
+		console.log(newDate);
 		return newDate.toLocaleDateString();
 	};
 
