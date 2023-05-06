@@ -1,5 +1,5 @@
 import React, { useContext, useCallback, useState, useEffect } from "react";
-import { PieChart, Pie, Cell } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import AppContext from "../../../../store/appContext";
 
 export default function PiChart() {
@@ -78,23 +78,23 @@ export default function PiChart() {
 	};
 
 	return (
-		<PieChart width={1000} height={1000}>
-			<Pie
-				data={data}
-				cx="425"
-				cy="225"
-				labelLine={false}
-				label={renderCustomizedLabel}
-				outerRadius={180}
-				fill="#8884d8"
-				dataKey="count">
-				{data.map((entry, index) => (
-					<Cell
-						key={`cell-${index}`}
-						fill={COLORS[index % COLORS.length]}
-					/>
-				))}
-			</Pie>
-		</PieChart>
+		<ResponsiveContainer width="100%" height="100%">
+			<PieChart>
+				<Pie
+					data={data}
+					labelLine={false}
+					label={renderCustomizedLabel}
+					outerRadius={180}
+					fill="#8884d8"
+					dataKey="count">
+					{data.map((entry, index) => (
+						<Cell
+							key={`cell-${index}`}
+							fill={COLORS[index % COLORS.length]}
+						/>
+					))}
+				</Pie>
+			</PieChart>
+		</ResponsiveContainer>
 	);
 }

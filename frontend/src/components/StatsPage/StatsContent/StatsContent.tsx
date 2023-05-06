@@ -18,6 +18,7 @@ import useHttpReq from "../../../hooks/use-HttpReq";
 import UserContext from "../../../store/userContext";
 import MenuPopupState from "../../Shared/PopUpMenu";
 import PiChart from "./GraphTypes/PiChart";
+import LChart from "./GraphTypes/LineChart";
 
 const StatsContent = () => {
 	const appCtx = useContext(AppContext);
@@ -72,7 +73,7 @@ const StatsContent = () => {
 	};
 
 	const renderBarChart = (
-		<ResponsiveContainer width="90%" height="60%">
+		<ResponsiveContainer width="100%" height="100%">
 			<BarChart data={stats}>
 				<XAxis dataKey="status" stroke="#8884d8" />
 				<YAxis />
@@ -101,13 +102,15 @@ const StatsContent = () => {
 			<div className={styles.buttons}>
 				<MenuPopupState
 					title="Chart Type"
-					items={["Bar", "Pie"]}
+					items={["Bar", "Pie", "Line"]}
 					clickFunc={setGraphStyle}
 				/>
 			</div>
 			<div className={styles.content}>
 				<div className={styles.graph} id="node-to-convert">
-					{graphStyle == "Bar" ? renderBarChart : <PiChart />}
+					{graphStyle == "Bar" && renderBarChart}
+					{graphStyle == "Pie" && <PiChart />}
+					{graphStyle == "Line" && <LChart />}
 				</div>
 			</div>
 			<div className={styles.buttons}>

@@ -3,14 +3,14 @@
 	height: 600px;
 	display: flex;
 	justify-content: center;
+	align-items: center;
 	margin: auto;
 }
 
 .graph {
-	width: 900px;
-	height: 900px;
+	width: 70%;
+	height: inherit;
 	margin: auto;
-	margin-top: 4em;
 }
 
 .buttons {
@@ -18,10 +18,4 @@
 	margin: 0;
 	display: flex;
 	justify-content: flex-end;
-}
-
-.test {
-	border: 1px solid pink;
-	width: 1000px;
-	height: 1000px;
 }
