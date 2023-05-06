@@ -19,3 +19,9 @@
 	display: flex;
 	justify-content: flex-end;
 }
+
+.test {
+	border: 1px solid pink;
+	width: 1000px;
+	height: 1000px;
+}

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useContext } from "react";
 import AppContext from "../../../store/appContext";
-import { useContext } from "react";
 import {
 	BarChart,
 	Bar,
@@ -15,88 +14,54 @@ import styles from "./StatsContent.module.css";
 import domtoimage from "dom-to-image";
 import fileDownload from "js-file-download";
 import { Button } from "@mui/material";
-
-class App {
-	company: string;
-	position: string;
-	date: string;
-	status: string;
-	appid: string;
-	uid: number;
-	constructor(
-		company: string,
-		position: string,
-		date: string,
-		status: string,
-		appid: string,
-		uid: number
-	) {
-		this.company = company;
-		this.position = position;
-		this.date = date;
-		this.status = status;
-		this.appid = appid;
-		this.uid = uid;
-	}
-}
+import useHttpReq from "../../../hooks/use-HttpReq";
+import UserContext from "../../../store/userContext";
+import MenuPopupState from "../../Shared/PopUpMenu";
+import PiChart from "./GraphTypes/PiChart";
 
 const StatsContent = () => {
 	const appCtx = useContext(AppContext);
+	const userCtx = useContext(UserContext);
 
-	const { appliedApps, inProgressApps, offerApps, rejectedApps, fetchApps } =
-		appCtx;
+	const [graphStyle, setGraphStyle] = useState("Bar");
+	const [stats, setStats] = useState<any[]>([]);
+	const sendReq = useHttpReq();
 
-	const [totalApps, setTotalApps] = useState<App[]>([]);
+	const [activeIndex, setActiveIndex] = useState(0);
+	const onPieEnter = useCallback(
+		(_: any, index: number) => {
+			setActiveIndex(index);
+		},
+		[setActiveIndex]
+	);
 
 	useEffect(() => {
-		try {
-			fetchApps();
-		} catch (err) {
-		} finally {
-			setTotalApps(
-				appliedApps
-					.concat(inProgressApps)
-					.concat(offerApps)
-					.concat(rejectedApps)
-			);
-		}
-	}, [
-		appliedApps.length,
-		inProgressApps.length,
-		offerApps.length,
-		rejectedApps.length,
-	]);
+		let data;
+		const fetchStats = async () => {
+			try {
+				console.log("fetching...");
+				data = await sendReq(
+					`http://localhost:5000/stats/statusStats/${userCtx.user.id}`,
+					"GET",
+					{
+						"Content-type": "application/json",
+						Authorization: `Bearer ${userCtx.user.accessToken}`,
+					}
+				);
 
-	const statusData = [
-		{
-			status: "Applied",
-			count: totalApps.reduce(
-				(acc, e) => (e.status == "Offer" ? acc + 1 : acc),
-				0
-			),
-		},
-		{
-			status: "In-Progress",
-			count: totalApps.reduce(
-				(acc, e) => (e.status == "In-Progress" ? acc + 1 : acc),
-				0
-			),
-		},
-		{
-			status: "Offer",
-			count: totalApps.reduce(
-				(acc, e) => (e.status == "Offer" ? acc + 1 : acc),
-				0
-			),
-		},
-		{
-			status: "Rejected",
-			count: totalApps.reduce(
-				(acc, e) => (e.status == "Rejected" ? acc + 1 : acc),
-				0
-			),
-		},
-	];
+				console.log(data.message);
+				if (data == undefined) {
+					throw new Error();
+				} else {
+					setStats(data.message);
+				}
+			} catch (err) {
+				console.log(err);
+			}
+		};
+
+		fetchStats();
+	}, []);
 
 	const handleSaveClick = () => {
 		domtoimage
@@ -108,7 +73,7 @@ const StatsContent = () => {
 
 	const renderBarChart = (
 		<ResponsiveContainer width="90%" height="60%">
-			<BarChart data={statusData}>
+			<BarChart data={stats}>
 				<XAxis dataKey="status" stroke="#8884d8" />
 				<YAxis />
 				<Tooltip
@@ -133,9 +98,16 @@ const StatsContent = () => {
 
 	return (
 		<>
+			<div className={styles.buttons}>
+				<MenuPopupState
+					title="Chart Type"
+					items={["Bar", "Pie"]}
+					clickFunc={setGraphStyle}
+				/>
+			</div>
 			<div className={styles.content}>
 				<div className={styles.graph} id="node-to-convert">
-					{renderBarChart}
+					{graphStyle == "Bar" ? renderBarChart : <PiChart />}
 				</div>
 			</div>
 			<div className={styles.buttons}>
