@@ -9,7 +9,7 @@ export const addApplication = (
 ) => {
 	// extract params from body
 	const { company, position, date, status, appid: id, uid } = req.body;
-	console.log(company, position, date, status, id, uid);
+
 	// if any are null 400 status
 	if (
 		!company.trim() ||
@@ -94,13 +94,11 @@ export const deleteApplication = (
 			[uid, appid],
 			(err, results) => {
 				if (err) {
-					console.log(err);
+					res.status(500).json({ message: "Something went wrong" });
 				} else if (results.rowCount == 0) {
-					res.status(204).json({
-						message: "No matching apps found",
-					});
+					res.sendStatus(204);
 				} else {
-					res.status(200).json({ message: "App deleted" });
+					res.sendStatus(204);
 				}
 			}
 		);

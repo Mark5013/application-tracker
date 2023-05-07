@@ -1,6 +1,12 @@
-import React, { useContext, useCallback, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import AppContext from "../../../../store/appContext";
+import ErrorModal from "../../../Shared/ErrorModal";
+import BackDrop from "../../../Shared/BackDrop";
+import { MouseEventHandler } from "react";
+import ReactDOM from "react-dom";
+
+const portal = document.getElementById("backdrop")! as HTMLDivElement;
 
 export default function PiChart() {
 	let data = [
@@ -10,7 +16,14 @@ export default function PiChart() {
 		{ status: "Rejected", count: 200 },
 	];
 	const appCtx = useContext(AppContext);
-	useEffect(() => appCtx.fetchApps, []);
+	const [isError, setIsError] = useState(false);
+	useEffect(() => {
+		try {
+			appCtx.fetchApps();
+		} catch (err) {
+			setIsError(true);
+		}
+	}, []);
 	data[0].count = appCtx.appliedApps.length;
 	data[1].count = appCtx.inProgressApps.length;
 	data[2].count = appCtx.offerApps.length;
@@ -79,7 +92,26 @@ export default function PiChart() {
 		);
 	};
 
-	return (
+	const handleErrorClick: MouseEventHandler<
+		HTMLButtonElement | HTMLDivElement
+	> = () => {
+		setIsError((prev) => !prev);
+	};
+
+	return isError ? (
+		<>
+			{ReactDOM.createPortal(
+				<>
+					<ErrorModal
+						text="Something went wrong!"
+						handleClick={handleErrorClick}
+					/>
+					<BackDrop toggleForm={handleErrorClick}></BackDrop>
+				</>,
+				portal
+			)}
+		</>
+	) : (
 		<ResponsiveContainer width="100%" height="100%">
 			<PieChart>
 				<Pie

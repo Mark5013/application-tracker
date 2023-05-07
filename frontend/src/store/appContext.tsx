@@ -94,7 +94,6 @@ export const AppContextProvider = (props: any) => {
 
 		// gets apps from database
 		const getApps = async () => {
-			console.log(`getting apps ${JSON.stringify(userCtx.user)}`);
 			const res = await sendReq(
 				`http://localhost:5000/apps/getApps/${userCtx.user.id}`,
 				"GET",
@@ -108,19 +107,19 @@ export const AppContextProvider = (props: any) => {
 			await getApps();
 
 			const aApps = applications.filter(
-				(app: App) => app.status == "Applied"
+				(app: App) => app.status === "Applied"
 			);
 
 			const pApps = applications.filter(
-				(app: App) => app.status == "In-Progress"
+				(app: App) => app.status === "In-Progress"
 			);
 
 			const oApps = applications.filter(
-				(app: App) => app.status == "Offer"
+				(app: App) => app.status === "Offer"
 			);
 
 			const rApps = applications.filter(
-				(app: App) => app.status == "Rejected"
+				(app: App) => app.status === "Rejected"
 			);
 
 			setAppliedApps([...aApps]);

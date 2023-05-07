@@ -23,7 +23,9 @@ const handleRefreshToken = (req: Request, res: Response) => {
 			[refreshToken],
 			(err, results) => {
 				// if doesn't exist, 403 status, invalid cookie
-				if (results.rowCount == 0) {
+				if (err) {
+					res.sendStatus(500);
+				} else if (results.rowCount == 0) {
 					res.sendStatus(403);
 				} else {
 					// extract refresh token secret

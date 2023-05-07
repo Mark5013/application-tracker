@@ -20,7 +20,6 @@ interface ApplicationProps {
 
 const Application: React.FC<ApplicationProps> = (props) => {
 	const [showEditForm, setShowEditForm] = useState(false);
-	console.log(props.company);
 	const toggleEditForm = () => {
 		setShowEditForm((prev) => !prev);
 	};

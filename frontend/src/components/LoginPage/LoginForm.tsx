@@ -32,22 +32,14 @@ const LoginForm = (props: { switchForm: Function }) => {
 			const accessToken = user?.message?.accessToken;
 			// save user to context and go to apps page
 			if (user) {
-				try {
-					userCtx.login(
-						user.message.id,
-						user.message.email,
-						user.message.firstName,
-						user.message.lastName,
-						accessToken
-					);
-				} catch (err) {
-					console.log(err);
-				} finally {
-					console.log(
-						`just logged in ${JSON.stringify(userCtx.user)}`
-					);
-					navigate("/apps", { replace: true });
-				}
+				userCtx.login(
+					user.message.id,
+					user.message.email,
+					user.message.firstName,
+					user.message.lastName,
+					accessToken
+				);
+				navigate("/apps", { replace: true });
 			} else {
 				throw new Error("Couldn't login, please try again");
 			}

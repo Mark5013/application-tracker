@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React, { MouseEventHandler, useEffect } from "react";
 import ReactDOM from "react-dom";
 import styles from "./TrackingContent.module.css";
 import AppTrackDivider from "./AppTrackDivider";
-import Application from "./Application";
 import BackDrop from "../../Shared/BackDrop";
 import ApplicationForm from "./ApplicationForm";
 import { useState, useContext } from "react";
@@ -11,6 +10,7 @@ import { v4 as uuidv4 } from "uuid";
 import useHttpReq from "../../../hooks/use-HttpReq";
 import UserContext from "../../../store/userContext";
 import AppContext from "../../../store/appContext";
+import ErrorModal from "../../Shared/ErrorModal";
 
 class App {
 	company: string;
@@ -42,6 +42,7 @@ const TrackingContent: React.FC = () => {
 	const sendReq = useHttpReq();
 	const userCtx = useContext(UserContext);
 	const appCtx = useContext(AppContext);
+	const [isError, setIsError] = useState(false);
 
 	const {
 		appliedApps,
@@ -64,7 +65,7 @@ const TrackingContent: React.FC = () => {
 	// toggle for application form
 	const [showForm, setShowForm] = useState(false);
 
-	// load up users apps from local storage, soon to be connected to database
+	// load up users apps from database
 	useEffect(fetchApps, []);
 
 	// toggles form
@@ -72,8 +73,7 @@ const TrackingContent: React.FC = () => {
 		setShowForm((prev) => !prev);
 	};
 
-	// creates application and adds it to proper storage in local storage
-	// soon to be connected to data base
+	// creates application and adds it to database
 	const addApplication = async (
 		companyName: string,
 		position: string,
@@ -82,7 +82,8 @@ const TrackingContent: React.FC = () => {
 	) => {
 		//create app
 		const appId = uuidv4();
-		console.log(appId);
+
+		// create applications
 		const newApp = new App(
 			companyName,
 			position,
@@ -91,11 +92,13 @@ const TrackingContent: React.FC = () => {
 			appId,
 			userCtx.user.id
 		);
+
+		// get w/e applicaiton list and corresponding function based off the apps satus
 		let curApps = applicationHash[status];
 		const setCurApps = setApplicationHash[status];
 
 		try {
-			const res = await sendReq(
+			await sendReq(
 				"http://localhost:5000/apps/addApplication",
 				"POST",
 				{
@@ -104,10 +107,12 @@ const TrackingContent: React.FC = () => {
 				},
 				JSON.stringify(newApp)
 			);
+			// push into list and set it
 			curApps.push(newApp);
 			setCurApps(curApps);
 		} catch (err) {
-			console.log(err);
+			// if error show error modal
+			setIsError((prev) => !prev);
 		}
 
 		// close form
@@ -133,13 +138,13 @@ const TrackingContent: React.FC = () => {
 		const setCurApps = setApplicationHash[status];
 
 		// if status has changed get old apps, set old apps, and the app from the arr
-		if (prevStatus != status) {
+		if (prevStatus !== status) {
 			oldApps = applicationHash[prevStatus];
 			setOldApps = setApplicationHash[prevStatus];
 			appToEdit = oldApps.find((app) => app.appid === appId);
 		} else {
 			// if not, just use cur apps
-			appToEdit = curApps.find((app) => app.appid == appId);
+			appToEdit = curApps.find((app) => app.appid === appId);
 		}
 
 		// edit app
@@ -156,7 +161,7 @@ const TrackingContent: React.FC = () => {
 
 			// set new arr in local storage
 			try {
-				const res = await sendReq(
+				await sendReq(
 					`http://localhost:5000/apps/editApplication`,
 					"PUT",
 					{
@@ -172,8 +177,7 @@ const TrackingContent: React.FC = () => {
 						id: userCtx.user.id,
 					})
 				);
-
-				// if status has changed, filter old one, update old one in local storage, and set old one
+				// if status has changed, filter old one, update old one, and set old one
 				if (oldApps && setOldApps) {
 					const filteredOldApps = oldApps.filter(
 						(app) => app.appid !== appId
@@ -184,29 +188,32 @@ const TrackingContent: React.FC = () => {
 				// spread operator so react realizes something changed
 				setCurApps([...curApps]);
 			} catch (err) {
-				console.log(err);
+				setIsError((prev) => !prev);
 			}
 		}
 	};
 
 	// deletes an app
 	const deleteApp = async (appId: string, status: string) => {
+		// corresponding app list and set list function based off apps status
 		let curApps = applicationHash[status];
 		let setCurApps = setApplicationHash[status];
 
+		// filter apps to remove app from list client side
 		const filteredApps = curApps.filter((app) => app.appid !== appId);
-		//localStorage.setItem(`${status}`, JSON.stringify(filteredApps));
+
+		// remove from database
 		try {
-			const res = await sendReq(
+			await sendReq(
 				`http://localhost:5000/apps/deleteApplication/${userCtx.user.id}/${appId}`,
 				"DELETE",
 				{ Authorization: `Bearer ${userCtx.user.accessToken}` }
 			);
 
 			setCurApps(filteredApps);
-			console.log(res.message);
 		} catch (err) {
-			console.log(err);
+			// if error show modal
+			setIsError((prev) => !prev);
 		}
 	};
 
@@ -236,12 +243,28 @@ const TrackingContent: React.FC = () => {
 		setRejectedFilter(event.currentTarget.value);
 	};
 
+	const handleErrorClick: MouseEventHandler<
+		HTMLButtonElement | HTMLDivElement
+	> = () => {
+		setIsError((prev) => !prev);
+	};
+
 	return (
 		<>
+			{isError &&
+				ReactDOM.createPortal(
+					<>
+						<ErrorModal
+							text="Something went wrong!"
+							handleClick={handleErrorClick}
+						/>
+						<BackDrop toggleForm={handleErrorClick}></BackDrop>
+					</>,
+					portal
+				)}
 			{showForm &&
 				ReactDOM.createPortal(
 					<>
-						{" "}
 						<ApplicationForm
 							toggleForm={toggleForm}
 							addApplication={addApplication}

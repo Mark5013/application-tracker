@@ -12,8 +12,6 @@ const Header: React.FC = () => {
 	const sendReq = useHttpReq();
 	const location = useLocation();
 
-	console.log(location.pathname);
-
 	const handleLogoutClick = async () => {
 		try {
 			// send req to logout route
@@ -25,6 +23,7 @@ const Header: React.FC = () => {
 				"include"
 			);
 		} catch (err) {
+			console.log(err);
 		} finally {
 			// update state and send user to home page
 			userCtx.logout();
@@ -32,8 +31,9 @@ const Header: React.FC = () => {
 		}
 	};
 
+	// redirect to proper page
 	const handleStatsClick = () => {
-		navigate(location.pathname == "/stats" ? "/apps" : "/stats", {
+		navigate(location.pathname === "/stats" ? "/apps" : "/stats", {
 			replace: false,
 		});
 	};

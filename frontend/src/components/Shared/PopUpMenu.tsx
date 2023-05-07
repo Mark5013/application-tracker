@@ -26,8 +26,9 @@ export default function MenuPopupState(props: menuProps) {
 					<Menu
 						{...bindMenu(popupState)}
 						PaperProps={{ sx: { width: "123px" } }}>
-						{props.items.map((curItem) => (
+						{props.items.map((curItem, idx) => (
 							<MenuItem
+								key={idx}
 								onClick={() => {
 									handleClick(curItem, popupState);
 								}}>

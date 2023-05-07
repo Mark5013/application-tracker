@@ -36,7 +36,7 @@ export const signUpUser = (req: Request, res: Response, next: NextFunction) => {
 		[email],
 		(err, results) => {
 			if (err) {
-				console.log(err);
+				res.status(500).json({ message: "Something went wrong" });
 			}
 			if (results.rowCount > 0) {
 				res.status(400).json({ message: "User already exists" });
@@ -45,14 +45,20 @@ export const signUpUser = (req: Request, res: Response, next: NextFunction) => {
 				bcrypt.genSalt(10, (err, salt) => {
 					// if err throw err
 					if (err) {
-						throw new Error();
+						res.status(500).json({
+							message: "Something went wrong",
+						});
+						return;
 					}
 
 					// hash password
 					bcrypt.hash(password, salt, (err, hash) => {
 						// if err, throw err
 						if (err) {
-							throw new Error();
+							res.status(500).json({
+								message: "Something went wrong",
+							});
+							return;
 						}
 
 						// create their refresh token
@@ -67,8 +73,9 @@ export const signUpUser = (req: Request, res: Response, next: NextFunction) => {
 							(err, results) => {
 								// if err, throw err
 								if (err) {
-									console.log(err);
-									throw new Error();
+									res.status(500).json({
+										message: "Something went wrong",
+									});
 								}
 								// on success return user with created jwt
 								const user: User = results.rows[0];
@@ -91,7 +98,7 @@ export const signUpUser = (req: Request, res: Response, next: NextFunction) => {
 									maxAge: 24 * 60 * 60 * 1000 * 30,
 								});
 
-								// snd back created user
+								// send back created user
 								res.status(201).json({
 									message: {
 										id: user.id,
@@ -115,25 +122,34 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
 	// extract email and password from body
 	const { email, password } = req.body;
 
+	// validate credentials
+	if (!ValidateEmail(email) || !ValidatePassword(password)) {
+		res.status(400).json({ message: "Invalid credentials" });
+		return;
+	}
+
 	// query database for matching emai
 	pool.query(
 		"SELECT * FROM users WHERE email=$1;",
 		[email],
 		(error, results) => {
 			if (error) {
-				throw error;
+				res.status(500).json({ message: "Something went wrong" });
 			}
 
 			// if no matching email, return err
 			if (results.rowCount == 0) {
-				res.status(400).json({ message: "Incorrect email" });
+				res.status(400).json({ message: "Incorrect credentials" });
 			} else {
 				const user: User = results.rows[0];
 
 				// compare passwords
 				bcrypt.compare(password, user.password, (err, match) => {
 					if (err) {
-						throw err;
+						res.status(500).json({
+							message: "Something went wrong",
+						});
+						return;
 					}
 
 					// if match, return user with acessToken, else return err
@@ -171,7 +187,9 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
 							[refreshToken, user.id],
 							(err, results2) => {
 								if (err) {
-									console.log(err);
+									res.status(500).json({
+										message: "Something went wrong",
+									});
 								} else {
 									// return the logged in user
 									res.status(200).json({
@@ -187,7 +205,9 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
 							}
 						);
 					} else {
-						res.status(400).json({ message: "Invalid password" });
+						res.status(400).json({
+							message: "Invalid credentials",
+						});
 					}
 				});
 			}
@@ -199,19 +219,22 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
 export const logoutUser = (req: Request, res: Response) => {
 	// extract cookie
 	const cookies = req.cookies;
+
 	// if cookie doesn't exist, just send 401 status
 	if (!cookies?.jwt) {
 		res.sendStatus(401);
 	} else {
 		// extract refresh token from cookie
 		const refreshToken = cookies.jwt;
-		console.log(`logout: ${refreshToken}`);
+
 		// query database for matching refresh token and clear it if matched or not
 		pool.query(
 			"SELECT * FROM users WHERE refreshtoken=$1;",
 			[refreshToken],
 			(err, results) => {
-				if (results.rowCount == 0) {
+				if (err) {
+					res.sendStatus(500);
+				} else if (results.rowCount == 0) {
 					res.clearCookie("jwt", {
 						secure: true,
 						httpOnly: true,
@@ -225,7 +248,6 @@ export const logoutUser = (req: Request, res: Response) => {
 						[refreshToken],
 						(err, results2) => {
 							if (err) {
-								console.log(err);
 								res.sendStatus(500);
 							} else {
 								res.clearCookie("jwt", {

@@ -1,14 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import pool from "../queries";
 
+// get count of all offers, inprogess, applied, and rejected applications for specific users
 export const statusStats = (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
+	// extract uid from url
 	const uid = req.params.uid;
-	console.log(`uid: ${uid}`);
 
+	// if uid null, 403 status code
 	if (uid == null) {
 		res.status(403).json({ message: "Invalid uid" });
 	} else {
@@ -17,9 +19,8 @@ export const statusStats = (
 			[uid],
 			(err, results) => {
 				if (err) {
-					console.log(err);
+					res.sendStatus(500);
 				} else {
-					console.log(results.rows);
 					res.status(200).json({ message: results.rows });
 				}
 			}
@@ -27,14 +28,16 @@ export const statusStats = (
 	}
 };
 
+// get the count of all offers, applied, inprogess, and rejected applications over time
 export const statusOverTimeStats = (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
+	// extract uid from url
 	const uid = req.params.uid;
-	console.log(`uid: ${uid}`);
 
+	// max amount seen so far for each possible status
 	const MAXES: { [key: string]: number } = {
 		Offer: 0,
 		Rejected: 0,
@@ -42,6 +45,7 @@ export const statusOverTimeStats = (
 		"In-Progress": 0,
 	};
 
+	// if uid null, 403 status
 	if (uid == null) {
 		res.status(403).json({ message: "Invalid uid" });
 	} else {
@@ -58,17 +62,29 @@ export const statusOverTimeStats = (
 			[uid],
 			(err, results) => {
 				if (err) {
-					console.log(err);
+					res.sendStatus(500);
 				} else {
+					if (results.rowCount === 0) {
+						res.status(200).json({ message: [] });
+						return;
+					}
+
+					// loop through results
 					for (const obj of results.rows) {
+						// set the max seen for each possible status, this so graph on client side can connect null values
 						MAXES[`${obj.status}`] = Math.max(
 							MAXES[`${obj.status}`],
 							obj.num_appids
 						);
+						// set key as whatever status, and pair as number of apps up until that date
 						obj[`${obj.status}`] = obj.num_appids;
+
+						// extract year, month, day, and then create new date object in the obj
 						const [year, month, day] = obj.date.split("-");
 						obj.date = new Date(year, month - 1, day);
 					}
+
+					// if any of the statuses are not on the earlist date, add them to it with number of apps = 0, this is so graph can connect null points
 					if (!("Offer" in results.rows[0])) {
 						results.rows[0]["Offer"] = 0;
 					}
@@ -82,6 +98,7 @@ export const statusOverTimeStats = (
 						results.rows[0]["Applied"] = 0;
 					}
 
+					// if any of the statueses are not on the latest date, add them to it with the max number of apps, this is so graph can connect null points
 					if (!("Offer" in results.rows[results.rowCount - 1])) {
 						results.rows[results.rowCount - 1]["Offer"] =
 							MAXES["Offer"];

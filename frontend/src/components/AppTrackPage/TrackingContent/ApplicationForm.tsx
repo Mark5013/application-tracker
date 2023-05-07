@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useState } from "react";
+import React, { useState } from "react";
 import styles from "./ApplicationForm.module.css";
 import Input from "../../Shared/Input";
 import BasicSelect from "./BasicSelect";

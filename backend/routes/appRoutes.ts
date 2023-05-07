@@ -14,6 +14,7 @@ router.post("/addApplication", addApplication);
 // edit users application
 router.put("/editApplication", editApplication);
 
+// delete a specific application for a user
 router.delete("/deleteApplication/:uid/:appid", deleteApplication);
 
 // get all of users applications

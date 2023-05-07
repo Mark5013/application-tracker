@@ -17,13 +17,15 @@ const useHttpReq = () => {
 					body,
 				});
 
-				const resData = await res.json();
+				if (res.status !== 204) {
+					const resData = await res.json();
 
-				if (!res.ok) {
-					throw new Error(resData.message);
+					if (!res.ok) {
+						throw new Error(resData.message);
+					}
+
+					return resData;
 				}
-
-				return resData;
 			} catch (err) {
 				throw err;
 			}

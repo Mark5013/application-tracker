@@ -5,6 +5,10 @@ import { Button } from "@mui/material";
 import Input from "../Shared/Input";
 import useHttpReq from "../../hooks/use-HttpReq";
 import UserContext from "../../store/userContext";
+import ErrorModal from "../Shared/ErrorModal";
+import BackDrop from "../Shared/BackDrop";
+import { MouseEventHandler } from "react";
+import ReactDOM from "react-dom";
 
 function ValidateEmail(mail: string) {
 	if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
@@ -24,6 +28,8 @@ function ValidatePassword(password: string) {
 	return false;
 }
 
+const portal = document.getElementById("backdrop")! as HTMLDivElement;
+
 const SignUpForm = (props: { switchForm: Function }) => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -36,6 +42,7 @@ const SignUpForm = (props: { switchForm: Function }) => {
 	const [lastError, setLastError] = useState(false);
 
 	const [emailExists, setEmailExists] = useState(false);
+	const [isError, setIsError] = useState(false);
 
 	const sendRequest = useHttpReq();
 	const navigate = useNavigate();
@@ -84,10 +91,9 @@ const SignUpForm = (props: { switchForm: Function }) => {
 					"include"
 				);
 
-				// save user to ctx
-				console.log(user);
 				const accessToken = user?.message?.accessToken;
-				// navigate to home page
+
+				// save user to ctx
 				userCtx.login(
 					user.message.id,
 					user.message.email,
@@ -95,14 +101,17 @@ const SignUpForm = (props: { switchForm: Function }) => {
 					user.message.lastName,
 					accessToken
 				);
+				// navigate to home page
 				navigate("/apps", { replace: true });
 			} catch (err) {
 				// show err message if user already exists
 				if (
 					err instanceof Error &&
-					err.message == "User already exists"
+					err.message === "User already exists"
 				) {
 					setEmailExists(true);
+				} else {
+					setIsError((prev) => !prev);
 				}
 			}
 		}
@@ -112,79 +121,100 @@ const SignUpForm = (props: { switchForm: Function }) => {
 		props.switchForm();
 	};
 
+	const handleErrorClick: MouseEventHandler<
+		HTMLButtonElement | HTMLDivElement
+	> = () => {
+		setIsError((prev) => !prev);
+	};
+
 	return (
-		<div className={styles.container}>
-			<a className={styles.title} href="/">
-				App Tracker
-			</a>
-			<form className={styles.form}>
-				<Input
-					type="text"
-					label="First name"
-					val={firstName}
-					setValue={setFirstName}
-				/>
-				{firstError && (
-					<p className={styles.errorMsg}>
-						First name must not be empty
-					</p>
+		<>
+			{isError &&
+				ReactDOM.createPortal(
+					<>
+						<ErrorModal
+							text="Something went wrong!"
+							handleClick={handleErrorClick}
+						/>
+						<BackDrop toggleForm={handleErrorClick}></BackDrop>
+					</>,
+					portal
 				)}
-				<Input
-					type="text"
-					label="Last name"
-					val={lastName}
-					setValue={setLastName}
-				/>
-				{lastError && (
-					<p className={styles.errorMsg}>
-						Last name must not be empty
-					</p>
-				)}
-				<Input
-					type="text"
-					label="Email"
-					val={email}
-					setValue={setEmail}
-				/>
-				{emailError && (
-					<p className={styles.errorMsg}>Please enter valid email</p>
-				)}
-				{emailExists && (
-					<p className={styles.errorMsg}>Email already exists</p>
-				)}
-				<Input
-					type="password"
-					label="Password"
-					val={password}
-					setValue={setPassword}
-				/>
-				{passwordError && (
-					<p className={styles.errorMsg}>
-						Password must be at least 8 characters, contains 1
-						numeric, 1 lowercase, 1 uppercase letter, and 1 special
-						character
-					</p>
-				)}
-				<div className={styles.btns}>
-					<Button
-						color="inherit"
-						variant="contained"
-						onClick={submitFormHandler}
-						type="submit">
-						Sign Up
-					</Button>
-					<p className={styles.switchModeText}>
-						Already have an account?
-					</p>
-					<Button
-						variant="outlined"
-						onClick={switchMode}
-						color="info">
-						Login
-					</Button>
-				</div>
-			</form>
-		</div>
+			<div className={styles.container}>
+				<a className={styles.title} href="/">
+					App Tracker
+				</a>
+				<form className={styles.form}>
+					<Input
+						type="text"
+						label="First name"
+						val={firstName}
+						setValue={setFirstName}
+					/>
+					{firstError && (
+						<p className={styles.errorMsg}>
+							First name must not be empty
+						</p>
+					)}
+					<Input
+						type="text"
+						label="Last name"
+						val={lastName}
+						setValue={setLastName}
+					/>
+					{lastError && (
+						<p className={styles.errorMsg}>
+							Last name must not be empty
+						</p>
+					)}
+					<Input
+						type="text"
+						label="Email"
+						val={email}
+						setValue={setEmail}
+					/>
+					{emailError && (
+						<p className={styles.errorMsg}>
+							Please enter valid email
+						</p>
+					)}
+					{emailExists && (
+						<p className={styles.errorMsg}>Email already exists</p>
+					)}
+					<Input
+						type="password"
+						label="Password"
+						val={password}
+						setValue={setPassword}
+					/>
+					{passwordError && (
+						<p className={styles.errorMsg}>
+							Password must be at least 8 characters, contains 1
+							numeric, 1 lowercase, 1 uppercase letter, and 1
+							special character
+						</p>
+					)}
+					<div className={styles.btns}>
+						<Button
+							color="inherit"
+							variant="contained"
+							onClick={submitFormHandler}
+							type="submit">
+							Sign Up
+						</Button>
+						<p className={styles.switchModeText}>
+							Already have an account?
+						</p>
+						<Button
+							variant="outlined"
+							onClick={switchMode}
+							color="info">
+							Login
+						</Button>
+					</div>
+				</form>
+			</div>
+		</>
 	);
 };
 
