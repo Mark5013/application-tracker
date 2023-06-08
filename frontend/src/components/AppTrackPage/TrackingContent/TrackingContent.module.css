@@ -31,3 +31,8 @@
 	flex-direction: column;
 	background-color: #282828;
 }
+
+.btn {
+	width: 200px;
+	margin: 0 auto;
+}

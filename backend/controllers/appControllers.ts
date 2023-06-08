@@ -8,7 +8,15 @@ export const addApplication = (
 	next: NextFunction
 ) => {
 	// extract params from body
-	const { company, position, date, status, appid: id, uid } = req.body;
+	const {
+		company,
+		position,
+		date,
+		status,
+		appid: id,
+		uid,
+		season,
+	} = req.body;
 
 	// if any are null 400 status
 	if (
@@ -23,8 +31,8 @@ export const addApplication = (
 	} else {
 		// insert into apps table
 		pool.query(
-			"INSERT INTO apps VALUES ($1, $2, $3, $4, $5, $6);",
-			[id, uid, company, position, date, status],
+			"INSERT INTO apps VALUES ($1, $2, $3, $4, $5, $6, $7);",
+			[id, uid, company, position, date, status, season],
 			(err, results) => {
 				if (err) {
 					res.status(500).json({ message: "Something went wrong" });
@@ -113,6 +121,7 @@ export const getApplications = (
 ) => {
 	// extract uid from url
 	const uid = req.params.uid;
+	const season = req.params.season;
 
 	// if the uid is null, 400 status
 	if (uid == null) {
@@ -120,8 +129,8 @@ export const getApplications = (
 	} else {
 		// retrieve all of users apps from database, ordered by their status
 		pool.query(
-			"SELECT * from apps WHERE uid=$1 ORDER BY status;",
-			[uid],
+			"SELECT * from apps WHERE uid=$1 AND season=$2 ORDER BY status;",
+			[uid, season],
 			(err, results) => {
 				if (err) {
 					res.status(500).json({ message: "Something went wrong" });

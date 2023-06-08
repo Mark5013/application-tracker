@@ -11,6 +11,7 @@ import useHttpReq from "../../../hooks/use-HttpReq";
 import UserContext from "../../../store/userContext";
 import AppContext from "../../../store/appContext";
 import ErrorModal from "../../Shared/ErrorModal";
+import MenuPopupState from "../../Shared/PopUpMenu";
 
 class App {
 	company: string;
@@ -19,13 +20,15 @@ class App {
 	status: string;
 	appid: string;
 	uid: number;
+	season: string;
 	constructor(
 		company: string,
 		position: string,
 		date: string,
 		status: string,
 		appid: string,
-		uid: number
+		uid: number,
+		season: string
 	) {
 		this.company = company;
 		this.position = position;
@@ -33,6 +36,7 @@ class App {
 		this.status = status;
 		this.appid = appid;
 		this.uid = uid;
+		this.season = season;
 	}
 }
 
@@ -60,13 +64,15 @@ const TrackingContent: React.FC = () => {
 		applicationHash,
 		setApplicationHash,
 		fetchApps,
+		season,
+		setSeason,
 	} = appCtx;
 
 	// toggle for application form
 	const [showForm, setShowForm] = useState(false);
 
 	// load up users apps from database
-	useEffect(fetchApps, []);
+	useEffect(fetchApps, [season]);
 
 	// toggles form
 	const toggleForm = () => {
@@ -90,7 +96,8 @@ const TrackingContent: React.FC = () => {
 			date,
 			status,
 			appId,
-			userCtx.user.id
+			userCtx.user.id,
+			season
 		);
 
 		// get w/e applicaiton list and corresponding function based off the apps satus
@@ -278,6 +285,21 @@ const TrackingContent: React.FC = () => {
 					portal
 				)}
 			<div className={styles.main}>
+				<div className={styles.btn}>
+					<MenuPopupState
+						title={`Season: ${season}`}
+						items={[
+							"Fall 23",
+							"Winter 23",
+							"Spring 24",
+							"Summer 24",
+							"Fall 24",
+							"Winter 24",
+							"Spring 25",
+						]}
+						clickFunc={setSeason}
+					/>
+				</div>
 				<Grid container rowSpacing={4} columnSpacing={1}>
 					<Grid
 						item

@@ -18,6 +18,6 @@ router.put("/editApplication", editApplication);
 router.delete("/deleteApplication/:uid/:appid", deleteApplication);
 
 // get all of users applications
-router.get("/getApps/:uid", getApplications);
+router.get("/getApps/:uid/:season", getApplications);
 
 export { router as appRoutes };

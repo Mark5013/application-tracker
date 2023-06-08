@@ -16,6 +16,7 @@ import React from "react";
 import { useState, useContext, useEffect } from "react";
 import UserContext from "../../../../store/userContext";
 import useHttpReq from "../../../../hooks/use-HttpReq";
+import AppContext from "../../../../store/appContext";
 
 const portal = document.getElementById("backdrop")! as HTMLDivElement;
 
@@ -23,6 +24,7 @@ const BChart = () => {
 	const [isError, setIsError] = useState(false);
 
 	const userCtx = useContext(UserContext);
+	const appCtx = useContext(AppContext);
 	const [stats, setStats] = useState<any[]>([]);
 	const sendReq = useHttpReq();
 
@@ -31,7 +33,7 @@ const BChart = () => {
 		const fetchStats = async () => {
 			try {
 				data = await sendReq(
-					`http://localhost:5000/stats/statusStats/${userCtx.user.id}`,
+					`http://localhost:5000/stats/statusStats/${userCtx.user.id}/${appCtx.season}`,
 					"GET",
 					{
 						"Content-type": "application/json",

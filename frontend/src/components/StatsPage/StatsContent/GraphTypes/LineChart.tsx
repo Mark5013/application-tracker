@@ -16,11 +16,13 @@ import ErrorModal from "../../../Shared/ErrorModal";
 import BackDrop from "../../../Shared/BackDrop";
 import { MouseEventHandler } from "react";
 import ReactDOM from "react-dom";
+import AppContext from "../../../../store/appContext";
 
 const portal = document.getElementById("backdrop")! as HTMLDivElement;
 
 export default function LChart(props: any) {
 	const userCtx = useContext(UserContext);
+	const appCtx = useContext(AppContext);
 	const [data, setData] = useState([]);
 	const [isError, setIsError] = useState(false);
 	const sendReq = useHttpReq();
@@ -31,7 +33,7 @@ export default function LChart(props: any) {
 		const getData = async () => {
 			try {
 				res = await sendReq(
-					`http://localhost:5000/stats/statusOverTime/${userCtx.user.id}`,
+					`http://localhost:5000/stats/statusOverTime/${userCtx.user.id}/${appCtx.season}`,
 					"GET",
 					{
 						"Content-type": "application/json",

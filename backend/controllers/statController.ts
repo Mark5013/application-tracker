@@ -9,14 +9,15 @@ export const statusStats = (
 ) => {
 	// extract uid from url
 	const uid = req.params.uid;
+	const season = req.params.season;
 
 	// if uid null, 403 status code
 	if (uid == null) {
 		res.status(403).json({ message: "Invalid uid" });
 	} else {
 		pool.query(
-			"SELECT COUNT(appid), status FROM apps WHERE uid=$1 GROUP BY status;",
-			[uid],
+			"SELECT COUNT(appid), status FROM apps WHERE uid=$1 AND season=$2 GROUP BY status;",
+			[uid, season],
 			(err, results) => {
 				if (err) {
 					res.sendStatus(500);
@@ -36,6 +37,8 @@ export const statusOverTimeStats = (
 ) => {
 	// extract uid from url
 	const uid = req.params.uid;
+	const season = req.params.season;
+	console.log(season);
 
 	// max amount seen so far for each possible status
 	const MAXES: { [key: string]: number } = {
@@ -56,10 +59,11 @@ export const statusOverTimeStats = (
   			ON t1.status = t2.status
   			AND t1.uid = t2.uid
   			AND t1.date >= t2.date
+			AND t1.season = $2
 			GROUP BY t1.date, t1.status, t1.uid
-			HAVING t1.uid = $1
+			HAVING t1.uid = $1 
 			ORDER BY t1.date, t1.status;`,
-			[uid],
+			[uid, season],
 			(err, results) => {
 				if (err) {
 					res.sendStatus(500);

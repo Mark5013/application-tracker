@@ -52,6 +52,8 @@ type AppContextType = {
 	applicationHash: { [key: string]: App[] };
 	setApplicationHash: { [key: string]: Dispatch<SetStateAction<App[]>> };
 	fetchApps: () => void;
+	season: string;
+	setSeason: Dispatch<SetStateAction<string>>;
 };
 
 const AppContext = createContext<AppContextType>({} as AppContextType);
@@ -71,6 +73,8 @@ export const AppContextProvider = (props: any) => {
 	const [inProgressFilter, setInProgressFilter] = useState("");
 	const [offerFilter, setOfferFilter] = useState("");
 	const [rejectedFilter, setRejectedFilter] = useState("");
+
+	const [season, setSeason] = useState("Summer 24");
 
 	const applicationHash: { [key: string]: App[] } = {
 		Applied: appliedApps,
@@ -95,7 +99,7 @@ export const AppContextProvider = (props: any) => {
 		// gets apps from database
 		const getApps = async () => {
 			const res = await sendReq(
-				`http://localhost:5000/apps/getApps/${userCtx.user.id}`,
+				`http://localhost:5000/apps/getApps/${userCtx.user.id}/${season}`,
 				"GET",
 				{ Authorization: `Bearer ${userCtx.user.accessToken}` }
 			);
@@ -151,6 +155,8 @@ export const AppContextProvider = (props: any) => {
 		applicationHash,
 		setApplicationHash,
 		fetchApps,
+		season,
+		setSeason,
 	};
 
 	return (
